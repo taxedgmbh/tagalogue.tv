@@ -13,6 +13,15 @@ type Frame = { seconds: number; dataURL: string; blob: Blob }
 type Stage = 'idle' | 'uploading' | 'encoding' | 'thumbnail' | 'cataloguing' | 'done' | 'error'
 
 const STEPS = ['Uploading', 'Encoding', 'Thumbnail', 'Catalog', 'Live']
+/** The four that do work; 'Live' is the finish line, not a step. */
+const WORKING = 4
+/**
+ * Which stages can report a real fraction. Upload has XHR progress and Stream
+ * reports `pctComplete` while encoding; storing the thumbnail and writing the
+ * catalog are single quick calls with nothing to measure, so they say so
+ * rather than showing a bar that is secretly made up.
+ */
+const MEASURED: Record<string, boolean> = { uploading: true, encoding: true }
 
 export default function Page() {
   const [catalog, setCatalog] = useState<Catalog>(emptyCatalog)
@@ -210,16 +219,16 @@ export default function Page() {
       )
       await uploadFile(created.uploadURL, file, setProgress)
 
-      setStage('encoding')
+      setStage('encoding'); setProgress(0)
       const at = custom ? trim[0] + 10 : (frames[chosen]?.seconds ?? 10)
-      const ready = await waitUntilReady(created.uid, at)
+      const ready = await waitUntilReady(created.uid, at, setProgress)
 
-      setStage('thumbnail')
+      setStage('thumbnail'); setProgress(0)
       const artwork =
         (await storeThumbnail(created.uid, custom?.blob ?? frames[chosen]?.blob)) ??
         ready.thumbnailURL ?? null
 
-      setStage('cataloguing')
+      setStage('cataloguing'); setProgress(0)
       const id = `cf-${created.uid}`
       await postJSON('/api/catalog', describe(ready.streamURL, id, artwork))
 
@@ -296,6 +305,14 @@ export default function Page() {
   const pending = queue.filter((s) => s.state === 'pending' && s.videoURL)
   const stageIndex = { uploading: 0, encoding: 1, thumbnail: 2, cataloguing: 3, done: 4 }[stage as string] ?? -1
   const busy = stage !== 'idle' && stage !== 'done' && stage !== 'error'
+  const measured = MEASURED[stage] ?? false
+  // One bar for the whole run: completed steps plus however far into the
+  // current one we are. It used to be the upload's bar alone, which sat at
+  // 100% and then vanished while the longest step — encoding — ran silently.
+  const overall =
+    stage === 'done' ? 1
+    : stageIndex < 0 ? 0
+    : Math.min(1, (stageIndex + (measured ? progress : 0)) / WORKING)
   const scheduled = new Date(releaseAt).getTime() > Date.now()
   const endsBeforeItStarts =
     expiresAt !== '' && new Date(expiresAt).getTime() <= new Date(releaseAt).getTime()
@@ -558,18 +575,36 @@ export default function Page() {
 
             {busy || stage === 'done' ? (
               <>
-                {stage === 'uploading' && (
-                  <div className="bar"><i style={{ width: `${Math.round(progress * 100)}%` }} /></div>
-                )}
-                <ol className="steps" style={{ marginTop: 18 }}>
-                  {STEPS.map((name, index) => (
-                    <li key={name} className={index < stageIndex ? 'done' : index === stageIndex ? 'now' : ''}>
-                      <span className="dot" />{name}
-                      {index === 0 && stage === 'uploading' && progress > 0 &&
-                        <span style={{ color: 'var(--dimmer)' }}> {Math.round(progress * 100)}%</span>}
-                    </li>
-                  ))}
-                </ol>
+                <div className="run">
+                  <div className="run-head">
+                    <span>
+                      {stage === 'done'
+                        ? 'Published'
+                        : `Step ${stageIndex + 1} of ${WORKING} · ${STEPS[stageIndex]}`}
+                    </span>
+                    <b className="run-pct">{Math.round(overall * 100)}%</b>
+                  </div>
+                  <div className={measured ? 'bar' : 'bar working'}>
+                    <i style={{ width: `${Math.round(overall * 100)}%` }} />
+                  </div>
+                  <ol className="steps">
+                    {STEPS.map((name, index) => (
+                      <li
+                        key={name}
+                        className={index < stageIndex ? 'done' : index === stageIndex ? 'now' : ''}
+                      >
+                        <span className="dot" />{name}
+                        <span className="step-note">
+                          {index < stageIndex ? 'Done'
+                            : index !== stageIndex ? 'Waiting'
+                            : stage === 'done' ? 'Done'
+                            : measured ? `${Math.round(progress * 100)}%`
+                            : 'Working'}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
                 {stage === 'done' && (
                   <div style={{ marginTop: 24 }}>
                     <button className="action" onClick={reset}>Add another</button>
@@ -842,12 +877,17 @@ function wire(
   xhr.onerror = () => reject(new Error('The connection dropped during the upload.'))
 }
 
-async function waitUntilReady(uid: string, seconds: number) {
+async function waitUntilReady(
+  uid: string, seconds: number, onProgress: (fraction: number) => void
+) {
   const deadline = Date.now() + 30 * 60 * 1000
   while (Date.now() < deadline) {
     const res = await fetch(`/api/video/${uid}?t=${Math.round(seconds)}`)
-    const json = (await res.json()) as
-      { status: string; streamURL: string; thumbnailURL: string | null }
+    const json = (await res.json()) as {
+      status: string; streamURL: string; thumbnailURL: string | null
+      pctComplete: number | null
+    }
+    if (json.pctComplete !== null) onProgress(json.pctComplete / 100)
     if (json.status === 'ready') return json
     if (json.status === 'error') throw new Error('Cloudflare could not encode that video.')
     await new Promise((r) => setTimeout(r, 4000))

@@ -111,18 +111,28 @@ export async function videoDetails(uid: string): Promise<{
   streamURL: string | null
   thumbnailBase: string | null
   durationSeconds: number | null
+  /** How far Stream is through encoding, 0–100. Null before it starts. */
+  pctComplete: number | null
 }> {
   try {
     const result = await cf(`/accounts/${env('STREAM_ACCOUNT_ID')}/stream/${uid}`)
     const state = result?.status?.state
+    // Stream reports this as a string, and omits it entirely before encoding
+    // starts. The editor draws a progress bar from it, so anything unparseable
+    // has to come back as null rather than NaN.
+    const pct = Number(result?.status?.pctComplete)
     return {
       status: state === 'ready' ? 'ready' : state === 'error' ? 'error' : 'processing',
       streamURL: result?.playback?.hls ?? null,
       thumbnailBase: result?.thumbnail ?? null,
       durationSeconds: typeof result?.duration === 'number' ? result.duration : null,
+      pctComplete: Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) : null,
     }
   } catch {
-    return { status: 'processing', streamURL: null, thumbnailBase: null, durationSeconds: null }
+    return {
+      status: 'processing', streamURL: null, thumbnailBase: null,
+      durationSeconds: null, pctComplete: null,
+    }
   }
 }
 

@@ -17,5 +17,6 @@ export async function GET(
     streamURL: details.streamURL,
     thumbnailURL: thumbnailAt(details.thumbnailBase, seconds),
     durationSeconds: details.durationSeconds,
+    pctComplete: details.pctComplete,
   })
 }
