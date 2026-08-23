@@ -10,6 +10,12 @@ import { Trimmer, clock } from './Trimmer'
 import type { Submission } from '@/lib/submissions'
 
 type Frame = { seconds: number; dataURL: string; blob: Blob }
+type ViewTotals = {
+  ok?: boolean
+  day?: Record<string, number>
+  month?: Record<string, number>
+}
+
 type Stage = 'idle' | 'uploading' | 'encoding' | 'thumbnail' | 'cataloguing' | 'done' | 'error'
 
 const STEPS = ['Uploading', 'Encoding', 'Thumbnail', 'Catalog', 'Live']
@@ -59,6 +65,13 @@ export default function Page() {
 
   /** Result of the last "Refresh Top 10", or 'working' while it runs. */
   const [chart, setChart] = useState<string | null>(null)
+  /**
+   * Minutes viewed per episode, day and month, from Cloudflare's aggregate
+   * totals. Null until it has been asked for, and stays null if the token
+   * cannot read analytics — the column then shows a dash rather than a zero,
+   * because "not measured" and "nobody watched it" are different facts.
+   */
+  const [views, setViews] = useState<{ day: Record<string, number>; month: Record<string, number> } | null>(null)
   const [stage, setStage] = useState<Stage>('idle')
   const [progress, setProgress] = useState(0)
   const [problem, setProblem] = useState('')
@@ -68,6 +81,12 @@ export default function Page() {
     // The editor sees scheduled items too; the television does not.
     const res = await fetch('/api/catalog?all=1', { cache: 'no-store' })
     if (res.ok) setCatalog(await res.json())
+    // Views are decoration on this table: never awaited in a way that could
+    // delay the catalog, and a failure leaves the column empty.
+    void fetch('/api/top', { cache: 'no-store' })
+      .then((r) => (r.ok ? (r.json() as Promise<ViewTotals>) : null))
+      .then((v) => { if (v?.ok) setViews({ day: v.day ?? {}, month: v.month ?? {} }) })
+      .catch(() => {})
     const inbox = await fetch('/api/submissions', { cache: 'no-store' })
     if (inbox.ok) setQueue(await inbox.json())
   }, [])
@@ -273,6 +292,25 @@ export default function Page() {
       // The card advertises whichever languages actually have a track.
       subtitles: captions.map((c) => c.lang),
     }
+  }
+
+  /**
+   * How much of an episode has actually been watched, day and month.
+   *
+   * A dash where there is no measurement at all, so the column never reports
+   * a confident zero it cannot stand behind.
+   */
+  function watchedCell(id: string) {
+    if (!views) return <span className="meta">—</span>
+    const day = views.day[id] ?? 0
+    const month = views.month[id] ?? 0
+    if (month === 0) return <span className="meta">Not yet</span>
+    return (
+      <>
+        <div className="title" style={{ fontSize: 16 }}>{minutesLabel(month)}</div>
+        <div className="meta">{day > 0 ? `${minutesLabel(day)} today` : 'none today'}</div>
+      </>
+    )
   }
 
   /**
@@ -730,6 +768,7 @@ export default function Page() {
                 <th>Episode</th>
                 <th style={{ width: 120 }}>Strand</th>
                 <th style={{ width: 100 }}>Length</th>
+                <th style={{ width: 130 }}>Watched</th>
                 <th style={{ width: 190 }}>Release</th>
                 <th style={{ width: 130 }} />
               </tr>
@@ -752,14 +791,15 @@ export default function Page() {
                         {episode.synopsis.slice(0, 96)}{episode.synopsis.length > 96 ? '…' : ''}
                       </div>
                     </td>
-                    <td><span className="tag">{episode.showTitle}</span></td>
-                    <td style={{ color: 'var(--dim)' }}>
+                    <td data-label="Strand"><span className="tag">{episode.showTitle}</span></td>
+                    <td data-label="Length" style={{ color: 'var(--ink-dim)' }}>
                       {durationLabel(playingSeconds(episode))}
                       {episode.trimStart != null && (
                         <div className="meta">cut from {durationLabel(episode.duration)}</div>
                       )}
                     </td>
-                    <td>
+                    <td data-label="Watched">{watchedCell(episode.id)}</td>
+                    <td data-label="Release">
                       <span className={`tag ${status.tone}`}>{status.label}</span>
                       <div className="meta">
                         {episode.publishedAt ? new Date(episode.publishedAt).toLocaleString() : '—'}
@@ -806,6 +846,14 @@ export default function Page() {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────
+
+/** "3 min" / "2 h 10 min" — minutes viewed, not a count of plays. */
+function minutesLabel(minutes: number): string {
+  const m = Math.round(minutes)
+  if (m < 1) return 'under a minute'
+  if (m < 60) return `${m} min`
+  return `${Math.floor(m / 60)} h ${m % 60} min`
+}
 
 function localNow() { return toLocalInput(new Date().toISOString()) }
 

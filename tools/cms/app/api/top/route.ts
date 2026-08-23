@@ -5,6 +5,33 @@ import { minutesViewedByVideo, rankEpisodeIDs } from '@/lib/analytics'
 export const dynamic = 'force-dynamic'
 
 /**
+ * Minutes viewed per episode over the last day and the last month, for the
+ * editor's own table. Read-only — it changes nothing and writes nothing.
+ *
+ * Keyed by episode id rather than Stream uid so the caller does not have to
+ * know that one is the other with a prefix.
+ */
+export async function GET() {
+  const [day, month] = await Promise.all([
+    minutesViewedByVideo(24),
+    minutesViewedByVideo(24 * 30),
+  ])
+
+  if (day.error && month.error) {
+    return NextResponse.json({ ok: false, error: day.error }, { status: 502 })
+  }
+
+  const asEpisodes = (m: Map<string, number>) =>
+    Object.fromEntries([...m.entries()].map(([uid, minutes]) => [`cf-${uid}`, minutes]))
+
+  return NextResponse.json({
+    ok: true,
+    day: asEpisodes(day.views),
+    month: asEpisodes(month.views),
+  })
+}
+
+/**
  * Recomputes "Top 10 today" and writes it into the catalog.
  *
  * Behind the editor's password like everything else that writes. There is

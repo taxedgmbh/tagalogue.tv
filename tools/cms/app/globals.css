@@ -790,3 +790,179 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
   .signin-title { font-size: 34px; }
 }
 
+
+/* ── The editor, on the light ground ──────────────────────────────────────
+   Everything above in the admin block was written paper-on-ink. Rather than
+   rewrite it and risk /login, /submit and /report — which share those bare
+   element rules and already override them their own way — this scopes the
+   light treatment under `.wrap`, which only /admin uses. One class of
+   specificity beats a bare element selector, so these win without !important.
+
+   Same palette as the public site: paper to read on, ash for the band that
+   carries the brand, one red. */
+
+.wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 40px 110px;
+  background: var(--paper);
+  color: var(--ink-text);
+}
+/* The page behind the centred column, so the ground does not stop at 1240. */
+body:has(.wrap) { background: var(--paper); }
+
+/* The masthead used to sit 32px past this column on each side, so the header
+   was 64px wider than every section under it and nothing lined up. It is a
+   full-width band now — edge to edge, like the public site's — with its inner
+   padding computed so its content starts on exactly the same x as the panels
+   below. 580 = half the 1240 measure, less the 40px column padding. */
+.wrap .masthead {
+  margin: 0 calc(50% - 50vw) 44px;
+  padding: 26px max(40px, calc(50vw - 580px)) 24px;
+  background: var(--ash);
+  border-bottom: 4px solid var(--accent);
+}
+
+/* `.sub` is the /submit page's wrapper — 560px, centred, flex column — and the
+   editor uses the same word for a panel's subtitle. It was being laid out as a
+   phone form: centred in the panel and stretched to a column. */
+.wrap .sub {
+  max-width: 62ch; margin: 0 0 30px; padding: 0;
+  display: block; color: var(--ink-dim);
+}
+.wrap .masthead .lockup { mix-blend-mode: normal; }
+.wrap .masthead .titles .name { color: var(--ink-text); }
+.wrap .masthead .titles .role,
+.wrap .masthead .mode { color: var(--ink-dimmer); }
+.wrap .masthead .mode b { color: var(--ink-text); }
+.wrap .masthead-link { border-color: var(--ink-rule); color: var(--ink-dim); }
+.wrap .masthead-link:hover, .wrap .masthead-link:focus-visible {
+  border-color: var(--accent); color: var(--accent-deep);
+}
+
+.wrap h1, .wrap h2, .wrap h3 { color: var(--ink-text); }
+.wrap .label, .wrap .sublabel, .wrap .hint, .wrap .count, .wrap .empty,
+.wrap .meta, .wrap .small, .wrap .place { color: var(--ink-dimmer); }
+.wrap .sub, .wrap .said, .wrap .notice p { color: var(--ink-dim); }
+
+.wrap .panel {
+  background: #fff;
+  border: 2px solid var(--ink-rule);
+  padding: 32px; margin-bottom: 44px;
+}
+.wrap .sectionhead { border-bottom: 2px solid var(--ink-rule-strong); }
+
+.wrap input[type='text'], .wrap input[type='password'],
+.wrap input[type='datetime-local'], .wrap textarea, .wrap select {
+  background: #fff; color: var(--ink-text);
+  border: 2px solid var(--ink-rule);
+  color-scheme: light;
+}
+.wrap input:focus, .wrap textarea:focus, .wrap select:focus { border-color: var(--accent); }
+.wrap select option { background: #fff; color: var(--ink-text); }
+
+.wrap .choice { border-color: var(--ink-rule); color: var(--ink-dim); }
+.wrap .choice[aria-pressed='true'] {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+.wrap button.action { background: var(--accent); color: #fff; }
+.wrap button.action:disabled { background: var(--n-300); color: var(--n-700); }
+.wrap button.ghost { border-color: var(--ink-rule-strong); color: var(--ink-text); }
+.wrap button.ghost:hover { border-color: var(--accent); color: var(--accent-deep); }
+.wrap button.link { color: var(--ink-dimmer); }
+.wrap button.link:hover { color: var(--accent-deep); }
+.wrap button.link.danger { color: var(--accent-deep); }
+
+.wrap .drop {
+  border-color: var(--ink-rule-strong);
+  background: repeating-linear-gradient(115deg, #e4e2e2 0 12px, #dbd9d9 12px 24px);
+}
+.wrap .drop .small { color: var(--ink-dimmer); }
+.wrap .frame { border-color: var(--ink-rule); }
+.wrap .frame .time { background: rgba(255, 255, 255, 0.9); color: var(--ink-text); }
+
+.wrap .bar { background: var(--n-300); }
+.wrap .bar.working::after {
+  background: linear-gradient(90deg, transparent, rgba(32, 30, 29, 0.22), transparent);
+}
+.wrap .run-head { color: var(--ink-dimmer); }
+.wrap .run-pct { color: var(--ink-text); }
+.wrap .steps li { color: var(--ink-dimmer); }
+.wrap .steps li .dot { background: rgba(32, 30, 29, 0.2); }
+.wrap .steps li.done { color: var(--ink-dim); }
+.wrap .steps li.done .dot { background: var(--n-500); }
+.wrap .steps li.now { color: var(--ink-text); }
+.wrap .steps li .step-note { color: var(--ink-dimmer); }
+.wrap .steps li.now .step-note { color: var(--accent-deep); }
+
+.wrap th { color: var(--ink-dimmer); border-bottom-color: var(--ink-rule-strong); }
+.wrap td { border-bottom: 1px solid var(--ink-rule); }
+.wrap td .title { color: var(--ink-text); }
+.wrap td.thumb img, .wrap td.thumb .none {
+  border-color: var(--ink-rule);
+  background: repeating-linear-gradient(115deg, #e4e2e2 0 12px, #dbd9d9 12px 24px);
+}
+.wrap tr.editing { background: var(--accent-tint); }
+.wrap .tag { border-color: var(--ink-rule); color: var(--ink-dim); }
+.wrap .tag.new { background: var(--accent); border-color: var(--accent); color: #fff; }
+.wrap .tag.live { border-color: #4f7a17; color: #3f6212; }
+.wrap .tag.scheduled { border-color: var(--accent); color: var(--accent-deep); }
+.wrap .tag.draft { border-color: var(--ink-rule); color: var(--ink-dimmer); }
+.wrap .tag.unlisted { border-color: var(--ink-rule-strong); color: var(--ink-text); }
+.wrap .tag.expired { border-color: var(--ink-rule); color: var(--ink-dimmer); }
+.wrap .queue li { border-bottom: 1px solid var(--ink-rule); }
+.wrap .queue li.reviewing { background: var(--accent-tint); }
+.wrap .queue video { border-color: var(--ink-rule); }
+.wrap .tracks li { color: var(--ink-dim); }
+.wrap .trimtrack { background: var(--n-300); }
+.wrap .trimrow .time { color: var(--ink-dim); }
+.wrap .mono { color: var(--ink-dim); }
+.wrap .notice { border-left-color: var(--accent); }
+.wrap .notice .head { color: var(--accent-deep); }
+
+/* ── The editor on a phone ────────────────────────────────────────────────
+   /admin is used standing up, on the sofa, next to the television. The table
+   was the part that made that impossible: six columns at a fixed thumbnail
+   width do not fit a phone, so below 900px each row becomes a block. */
+@media (max-width: 900px) {
+  .wrap { padding: 0 20px 72px; }
+  .wrap .masthead { margin: 0 -20px 32px; padding: 20px 20px 18px; }
+  .wrap .masthead .lockup { height: 52px; }
+  .wrap .masthead-actions { width: 100%; margin-left: 0; margin-top: 14px; }
+  .wrap .panel { padding: 22px 18px; margin-bottom: 32px; }
+  .wrap .frames { grid-template-columns: repeat(2, 1fr); }
+  .wrap .sectionhead { flex-wrap: wrap; gap: 8px 16px; }
+  .wrap .sectionhead .count { margin-left: 0; }
+
+  /* Rows become cards: a thumbnail down the left at a size that supports the
+     text rather than swamping it, everything else stacked beside it.
+     `thead` goes, because a column head means nothing once there are no
+     columns — so each value carries its own label instead, or "2 min" and
+     "2 h 10 min" sit under each other with no way to tell length from
+     watching time. */
+  .wrap table, .wrap tbody { display: block; width: 100%; }
+  .wrap thead { display: none; }
+  .wrap tr {
+    display: grid;
+    grid-template-columns: 124px minmax(0, 1fr);
+    column-gap: 16px; row-gap: 12px;
+    align-items: start;
+    padding: 20px 0;
+    border-bottom: 2px solid var(--ink-rule);
+  }
+  .wrap td { display: block; border: 0; padding: 0; grid-column: 2; }
+  .wrap td.thumb { grid-column: 1; grid-row: 1 / -1; width: auto; }
+  .wrap td.thumb img, .wrap td.thumb .none { width: 124px; }
+  .wrap td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--ink-dimmer);
+    margin-bottom: 4px;
+  }
+  .wrap td .actions { justify-content: flex-start; gap: 22px; }
+  /* Two words that must not break across lines in a 44px-tall control. */
+  .wrap .masthead-link { white-space: nowrap; }
+  .wrap .queue li { grid-template-columns: 1fr; }
+  .wrap .queue video { width: 100%; }
+}
