@@ -93,13 +93,30 @@ struct HomeView: View {
             EpisodeArt(episode: episode, style: .showcase, light: true, label: "Hero still 1920 × 520")
                 .frame(height: 520)
 
+            // Two scrims rather than one. The horizontal one carries the
+            // copy on the left; the vertical one seats the whole block on the
+            // rails below. Both stop well short of opaque so the blurred
+            // backdrop reads across the full width — the still is the
+            // background of the hero, not a panel stuck to one side of it.
             LinearGradient(
                 stops: [
-                    .init(color: Color(hex: 0x0a0909).opacity(0.97), location: 0),
-                    .init(color: Color(hex: 0x0a0909).opacity(0.85), location: 0.44),
-                    .init(color: Color(hex: 0x0a0909).opacity(0),    location: 0.78)
+                    .init(color: Color(hex: 0x0a0909).opacity(0.94), location: 0),
+                    .init(color: Color(hex: 0x0a0909).opacity(0.72), location: 0.42),
+                    .init(color: Color(hex: 0x0a0909).opacity(0.18), location: 0.80),
+                    .init(color: Color(hex: 0x0a0909).opacity(0.10), location: 1)
                 ],
                 startPoint: .leading, endPoint: .trailing
+            )
+            .frame(height: 520)
+
+            LinearGradient(
+                stops: [
+                    .init(color: Color(hex: 0x0a0909).opacity(0.55), location: 0),
+                    .init(color: Color(hex: 0x0a0909).opacity(0),    location: 0.42),
+                    .init(color: Color(hex: 0x0a0909).opacity(0),    location: 0.62),
+                    .init(color: Color(hex: 0x0a0909).opacity(0.72), location: 1)
+                ],
+                startPoint: .top, endPoint: .bottom
             )
             .frame(height: 520)
 

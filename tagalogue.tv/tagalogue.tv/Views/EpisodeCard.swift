@@ -37,7 +37,9 @@ struct EpisodeCard: View {
             .buttonStyle(ArtCardStyle())
             .focused($focused)
             .accessibilityLabel(episode.accessibilityDescription)
-            .accessibilityValue(caption)
+            // The badge itself is hidden from VoiceOver, so "watched" has to
+            // reach it here or it is a purely visual state.
+            .accessibilityValue(resume?.isComplete == true ? "\(caption). Watched" : caption)
             .accessibilityHint(actionDescription)
 
             Text(episode.title)
@@ -78,6 +80,13 @@ struct EpisodeCard: View {
         .overlay(alignment: .topLeading) {
             if episode.isNew {
                 NewBadge().padding(10)
+            }
+        }
+        // Opposite corner from NEW: a newly published episode you have already
+        // finished is both, and they must not stack on top of each other.
+        .overlay(alignment: .topTrailing) {
+            if resume?.isComplete == true {
+                WatchedBadge().padding(10)
             }
         }
     }

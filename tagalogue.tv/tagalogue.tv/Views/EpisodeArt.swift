@@ -80,9 +80,12 @@ struct EpisodeArt: View {
     private func showcaseRemote(_ image: Image) -> some View {
         ZStack(alignment: .trailing) {
             Color.clear
-                .overlay(image.resizable().aspectRatio(contentMode: .fill).blur(radius: 60, opaque: true).saturation(0.7))
+                .overlay(image.resizable().aspectRatio(contentMode: .fill).blur(radius: 44, opaque: true).saturation(0.9))
                 .clipped()
-            Theme.ink.opacity(0.62)
+            // Enough to sit type on, not so much that the picture disappears.
+            // At 0.62, under the hero's own left-to-right scrim as well, the
+            // blurred copy was black and the frame looked like a cut-out.
+            Theme.ink.opacity(0.28)
             image.resizable().aspectRatio(contentMode: .fit)
                 .padding(.vertical, 24)
                 .padding(.trailing, Theme.Metrics.safeH)
@@ -108,12 +111,12 @@ struct EpisodeArt: View {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .blur(radius: 60, opaque: true)
-                        .saturation(0.7)
+                        .blur(radius: 44, opaque: true)
+                        .saturation(0.9)
                 )
                 .clipped()
 
-            Theme.ink.opacity(0.62)
+            Theme.ink.opacity(0.28)
 
             Image(uiImage: image)
                 .resizable()

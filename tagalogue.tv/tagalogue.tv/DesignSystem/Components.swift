@@ -22,6 +22,28 @@ struct NewBadge: View {
     }
 }
 
+/// "WATCHED", for a card whose episode is finished.
+///
+/// Deliberately not accent: red marks focus, the primary action and the NEW
+/// badge, and nothing else. This is paper on ink, sitting opposite NEW so the
+/// two can never collide on the same corner — an episode can be both.
+struct WatchedBadge: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark")
+                .font(.system(size: 19, weight: .heavy))
+            Text("WATCHED")
+                .archivo(.extrabold, 19, tracking: 0.14)
+        }
+        .foregroundStyle(Theme.paper)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 7)
+        .background(Theme.ink.opacity(0.82))
+        .overlay(Rectangle().strokeBorder(Theme.paper(0.4), lineWidth: Theme.Metrics.rule))
+        .accessibilityHidden(true)   // already spoken in the card's label
+    }
+}
+
 /// The 8pt rule along the bottom of a card's artwork.
 ///
 /// Accent while an episode is part-watched, paper once it is finished — the

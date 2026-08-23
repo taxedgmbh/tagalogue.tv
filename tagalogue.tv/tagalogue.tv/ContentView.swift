@@ -31,7 +31,22 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 NavBar(selection: $section, showsRule: section != .home)
                     .padding(.top, Theme.Metrics.safeV)
+                    // Home disables scroll clipping so a focused card can lift
+                    // past the edge of its rail without being cut off. The
+                    // cost is that scrolled content is free to draw outside
+                    // the scroll view entirely — including straight over the
+                    // nav bar. A scrim to keep the bar readable over whatever
+                    // is passing under it, and a zIndex so it passes *under*.
+                    .background(alignment: .top) {
+                        LinearGradient(
+                            colors: [Theme.ink.opacity(0.96), Theme.ink.opacity(0.82), Theme.ink.opacity(0)],
+                            startPoint: .top, endPoint: .bottom
+                        )
+                        .frame(height: Theme.Metrics.navHeight + Theme.Metrics.safeV + 40)
+                        .allowsHitTesting(false)
+                    }
                     .focusSection()
+                    .zIndex(1)
                 content
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
