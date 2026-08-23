@@ -20,11 +20,10 @@ export const metadata = {
   metadataBase: new URL('https://tagalogue.tv'),
   title: 'Tagalogue TV — Filipino–Swiss stories on Apple TV',
   description:
-    'A Filipino–Swiss channel from Biel/Bienne. Interviews, vlogs and stories sent in by the '
-    + 'community, in Tagalog and English, free on Apple TV. Published by Taxed GmbH.',
+    'A Filipino–Swiss channel from Bern. Interviews, vlogs and stories sent in by the '
+    + 'community, in Tagalog and English, free on Apple TV.',
   alternates: { canonical: '/' },
   applicationName: 'Tagalogue TV',
-  publisher: 'Taxed GmbH',
   category: 'entertainment',
   openGraph: {
     title: 'Tagalogue TV',
@@ -38,13 +37,17 @@ export const metadata = {
 }
 
 // Structured data. This is the part search engines actually read for entity
-// and publisher relationships — `sameAs` ties the accounts to the channel and
-// `parentOrganization` ties the channel to Taxed GmbH.
+// relationships — `sameAs` ties the accounts to the channel.
 //
 // Emitted as an @graph so the Organization and the WebSite are one connected
 // description rather than two unrelated blobs; `publisher` on the WebSite is
 // what lets Google show "Tagalogue TV" as the site name in results instead of
 // guessing from the domain.
+//
+// The operating company is deliberately not named here. It is named in full,
+// with its registered address, on /privacy, /terms and /support — which is
+// where somebody looking for it goes, and what the law and App Store Review
+// actually require. The front page is the channel, not the company.
 const ORGANISATION = {
   '@type': 'Organization',
   '@id': 'https://tagalogue.tv/#organisation',
@@ -56,24 +59,13 @@ const ORGANISATION = {
     'A Filipino–Swiss channel: interviews, vlogs and community stories, free on Apple TV.',
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Biel/Bienne',
+    addressLocality: 'Bern',
     addressCountry: 'CH',
   },
   sameAs: [
     'https://www.facebook.com/Tagaloguetv',
     'https://www.instagram.com/tagaloguetv/',
   ],
-  parentOrganization: {
-    '@type': 'Organization',
-    name: 'Taxed GmbH',
-    url: 'https://taxed.ch',
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Biel/Bienne',
-      addressCountry: 'CH',
-    },
-    brand: { '@type': 'Brand', name: 'Skopa', url: 'https://skopa.ai' },
-  },
 }
 
 const WEBSITE = {
@@ -131,7 +123,7 @@ export default async function Home() {
       <main className="site">
         <header className="band band--ash site-hero">
           <div className="band-inner">
-            <p className="eyebrow">Filipino–Swiss · Biel/Bienne</p>
+            <p className="eyebrow">Filipino–Swiss · Bern</p>
             <h1 className="site-title">Stories from the Filipino community in Switzerland</h1>
             <p className="site-lede">
               Sit-down interviews, vlogs from around the country, and pieces sent in by the
@@ -303,10 +295,10 @@ export default async function Home() {
             <p className="site-h2">About</p>
             <h2 className="site-head">A channel for a community that had none</h2>
             <p className="prose">
-              Tagalogue TV is a Filipino–Swiss channel run by Taxed GmbH in Biel/Bienne. It
-              exists because the Filipino community in Switzerland has plenty to say and few
-              places to say it — so the channel films conversations, collects vlogs from around
-              the country, and puts what viewers send in alongside them.
+              Tagalogue TV is a Filipino–Swiss channel made in Bern. It exists because the
+              Filipino community in Switzerland has plenty to say and few places to say it —
+              so the channel films conversations, collects vlogs from around the country, and
+              puts what viewers send in alongside them.
             </p>
           </div>
         </section>

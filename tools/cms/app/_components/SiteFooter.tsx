@@ -6,10 +6,10 @@
 // button-like thing on a page whose actual call to action is "send us your
 // story".
 //
-// The publisher line — Taxed GmbH, and Skopa alongside it — moved to the
-// "Who we are" section of /terms. It is company business, not something a
-// viewer needs on every page, and the operator is still named (with the
-// address) on /terms, /privacy and /support, which is what keeps it findable.
+// The operating company is named in full, with its registered address, on
+// /terms, /privacy and /support — which is where somebody looking for it goes,
+// and what the law and App Store Review require. It is not on the front page:
+// that is the channel, not the company.
 
 /**
  * `episodes` is the live published count, shown as the closing line. Only the
@@ -23,7 +23,7 @@ export default function SiteFooter({ episodes }: { episodes?: number }) {
         <div>
           <strong>Tagalogue TV</strong>
           <br />
-          Biel/Bienne, Switzerland
+          Bern, Switzerland
         </div>
         <div className="site-foot-links">
           <a href="https://www.facebook.com/Tagaloguetv" target="_blank" rel="noreferrer">Facebook</a>
