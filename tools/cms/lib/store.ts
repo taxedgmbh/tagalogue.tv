@@ -23,7 +23,7 @@ function bucket(): R2Bucket {
   return bound
 }
 
-function env(name: string): string {
+export function env(name: string): string {
   const context = getCloudflareContext().env as unknown as Record<string, string | undefined>
   const value = context[name] ?? process.env[name]
   if (!value) throw new Error(`${name} is not set. See .dev.vars.example.`)

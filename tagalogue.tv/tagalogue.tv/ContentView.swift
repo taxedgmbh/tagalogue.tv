@@ -29,20 +29,29 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $path) {
             VStack(spacing: 0) {
-                NavBar(selection: $section, showsRule: section != .home)
+                NavBar(selection: $section, showsRule: true)
                     .padding(.top, Theme.Metrics.safeV)
                     // Home disables scroll clipping so a focused card can lift
                     // past the edge of its rail without being cut off. The
                     // cost is that scrolled content is free to draw outside
                     // the scroll view entirely — including straight over the
-                    // nav bar. A scrim to keep the bar readable over whatever
-                    // is passing under it, and a zIndex so it passes *under*.
+                    // nav bar.
+                    //
+                    // So: a solid ground, not a scrim. On an ink page an ink
+                    // bar with nothing behind it is invisible until something
+                    // scrolls through it, which is exactly when it matters.
+                    // The short fade underneath keeps the join off the hero,
+                    // and `zIndex` puts the whole thing above the scroll view.
                     .background(alignment: .top) {
-                        LinearGradient(
-                            colors: [Theme.ink.opacity(0.96), Theme.ink.opacity(0.82), Theme.ink.opacity(0)],
-                            startPoint: .top, endPoint: .bottom
-                        )
-                        .frame(height: Theme.Metrics.navHeight + Theme.Metrics.safeV + 40)
+                        VStack(spacing: 0) {
+                            Theme.ink
+                                .frame(height: Theme.Metrics.navHeight + Theme.Metrics.safeV)
+                            LinearGradient(
+                                colors: [Theme.ink, Theme.ink.opacity(0)],
+                                startPoint: .top, endPoint: .bottom
+                            )
+                            .frame(height: 28)
+                        }
                         .allowsHitTesting(false)
                     }
                     .focusSection()

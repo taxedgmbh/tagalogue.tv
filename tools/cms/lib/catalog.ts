@@ -80,7 +80,18 @@ export const LANGUAGES = [
 ] as const
 
 export type Show = { id: string; title: string; subtitle: string; episodes: Episode[] }
-export type Catalog = { shows: Show[] }
+export type Catalog = {
+  shows: Show[]
+  /**
+   * Episode ids, most watched first, over the last day. Written by
+   * `POST /api/top` from Cloudflare's server-side Stream totals — never from
+   * anything a television reports, because a television reports nothing.
+   *
+   * Optional, and absent rather than empty when the numbers cannot be read:
+   * the app draws no chart at all instead of an empty or invented one.
+   */
+  topToday?: string[]
+}
 
 export const STRANDS = [
   { id: 'interviews', title: 'Interviews', subtitle: 'Sit-down conversations, recorded across Switzerland' },
@@ -119,11 +130,12 @@ export function withEpisode(catalog: Catalog, episode: Episode): Catalog {
   show.title = strand?.title ?? show.title
 
   // A strand nobody is in should not linger in the catalog.
-  return { shows: shows.filter((s) => s.episodes.length > 0) }
+  return { ...catalog, shows: shows.filter((s) => s.episodes.length > 0) }
 }
 
 export function withoutEpisode(catalog: Catalog, id: string): Catalog {
   return {
+    ...catalog,
     shows: catalog.shows
       .map((s) => ({ ...s, episodes: s.episodes.filter((e) => e.id !== id) }))
       .filter((s) => s.episodes.length > 0),
@@ -175,6 +187,7 @@ export function statusOf(episode: Episode, now = new Date()):
  */
 export function publicCatalog(catalog: Catalog, now = new Date()): Catalog {
   return {
+    ...catalog,
     shows: catalog.shows
       .map((s) => ({
         ...s,

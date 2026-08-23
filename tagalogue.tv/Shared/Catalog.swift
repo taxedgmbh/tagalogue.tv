@@ -222,14 +222,29 @@ struct Chapter: Codable, Identifiable, Hashable {
 struct Catalog: Codable {
     let shows: [Show]
 
+    /// Episode ids, most watched first, over the last day.
+    ///
+    /// Computed on the server from Cloudflare's aggregate Stream totals and
+    /// written into the catalog — never from anything this app reports, because
+    /// this app reports nothing. Watch progress stays in SwiftData on the
+    /// television, which is what /privacy promises.
+    ///
+    /// Optional, and absent rather than empty when there are no numbers: no
+    /// chart at all is honest, an empty one says "nobody watched anything".
+    let topToday: [String]?
+
     /// Same reasoning as `Show`: a malformed strand should cost the viewer that
     /// strand, not the channel.
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         shows = try container.decode([Lossy<Show>].self, forKey: .shows).compactMap(\.value)
+        topToday = try container.decodeIfPresent([String].self, forKey: .topToday)
     }
 
-    init(shows: [Show]) { self.shows = shows }
+    init(shows: [Show], topToday: [String]? = nil) {
+        self.shows = shows
+        self.topToday = topToday
+    }
 
     /// Everything that belongs in a rail: released, published and listed.
     ///
@@ -238,6 +253,17 @@ struct Catalog: Codable {
     /// cron, no re-deploy.
     var allEpisodes: [Episode] {
         shows.flatMap(\.episodes).filter { $0.isAvailable() && $0.isPublished && $0.isListed }
+    }
+
+    /// The chart, resolved against what is actually showable.
+    ///
+    /// Gated through `allEpisodes` like every other rail, so an episode that
+    /// has since been unpublished, expired or turned into a draft drops out of
+    /// the chart too rather than becoming a rank pointing at nothing.
+    var topEpisodes: [Episode] {
+        guard let topToday, !topToday.isEmpty else { return [] }
+        let byID = Dictionary(allEpisodes.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+        return topToday.compactMap { byID[$0] }
     }
 
     /// Everything playable, including unlisted episodes. Used to resolve a deep

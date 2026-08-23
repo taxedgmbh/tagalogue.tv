@@ -57,6 +57,8 @@ export default function Page() {
   /** The submission currently loaded into the editor, if any. */
   const [reviewing, setReviewing] = useState<Submission | null>(null)
 
+  /** Result of the last "Refresh Top 10", or 'working' while it runs. */
+  const [chart, setChart] = useState<string | null>(null)
   const [stage, setStage] = useState<Stage>('idle')
   const [progress, setProgress] = useState(0)
   const [problem, setProblem] = useState('')
@@ -234,6 +236,9 @@ export default function Page() {
 
       setStage('done')
       await refresh()
+      // The chart is a nice-to-have on top of a successful publish, so it is
+      // deliberately not awaited and its failure deliberately ignored.
+      void fetch('/api/top', { method: 'POST' }).catch(() => {})
     } catch (error) {
       setProblem((error as Error).message); setStage('error')
     }
@@ -267,6 +272,33 @@ export default function Page() {
       captions,
       // The card advertises whichever languages actually have a track.
       subtitles: captions.map((c) => c.lang),
+    }
+  }
+
+  /**
+   * Recounts the chart from Cloudflare's aggregate Stream totals.
+   *
+   * Says what happened either way. The usual failure is a token carrying
+   * Stream:Edit and nothing else, and silently showing no chart would look
+   * identical to "nobody watched anything" — a different claim entirely.
+   */
+  async function refreshChart() {
+    setChart('working')
+    try {
+      const res = await fetch('/api/top', { method: 'POST' })
+      const body = (await res.json()) as { ok?: boolean; top?: string[]; error?: string; hint?: string }
+      if (res.ok && body.ok) {
+        setChart(
+          body.top?.length
+            ? `Top 10 rebuilt — ${body.top.length} ranked.`
+            : 'Nothing watched in the last 24 hours, so the chart stays off.'
+        )
+        await refresh()
+      } else {
+        setChart(`${body.error ?? 'That did not work.'}${body.hint ? ` ${body.hint}` : ''}`)
+      }
+    } catch (error) {
+      setChart((error as Error).message)
     }
   }
 
@@ -678,12 +710,16 @@ export default function Page() {
       <section>
         <div className="sectionhead">
           <h2>On the channel</h2>
+          <button className="link" onClick={refreshChart} disabled={chart === 'working'}>
+            {chart === 'working' ? 'Counting…' : 'Refresh Top 10'}
+          </button>
           <span className="count">
             {episodes.length} {episodes.length === 1 ? 'episode' : 'episodes'}
             {episodes.some((e) => isScheduled(e)) &&
               ` · ${episodes.filter((e) => isScheduled(e)).length} scheduled`}
           </span>
         </div>
+        {chart && chart !== 'working' && <p className="hint">{chart}</p>}
         {episodes.length === 0 ? (
           <p className="empty">Nothing published yet. Anything you add here appears on every Apple TV.</p>
         ) : (

@@ -248,6 +248,24 @@ now decode their arrays through `Lossy<T>`, whose own decoding never throws, so 
 episode costs that episode and nothing else. `POST /api/catalog` also validates and fills the
 two arrays, so the safety net should never be needed.
 
+**Top 10 today is counted on the server, never on the television.** `/privacy`
+promises no analytics, and the app keeps that promise: watch progress lives in
+SwiftData on the Apple TV and is never sent anywhere, so the app cannot know
+what is popular. Cloudflare already counts playback at the edge as an aggregate
+with no viewer in it, and `lib/analytics.ts` reads those totals — minutes viewed
+per video, not play count, because a play is registered the moment somebody
+lands on a video and that would just rank whatever sits in the hero.
+`POST /api/top` ranks them, maps `uid` → `cf-<uid>`, and writes `topToday` into
+the catalog; the app resolves it through `allEpisodes` so an unpublished or
+expired episode drops out of the chart too.
+
+Two things about it: the Stream token needs **Account Analytics:Read** on top of
+`Stream:Edit`, and secrets need a redeploy to take effect. And when the numbers
+cannot be read the chart is left **exactly as it was** rather than emptied —
+an empty "Top 10 today" claims nobody watched anything, which is a different
+and false statement. It recomputes after each publish and from the button in
+`/admin`; a scheduler pointed at `/api/top` is what would make it truly daily.
+
 **The television enforces three of these itself, and that is deliberate** — the app must be correct
 even if it is pointed at an unfiltered feed:
 

@@ -20,6 +20,8 @@ struct EpisodeRail: View {
     /// Replaces the card's own meta line — "20 min left" on Continue Watching.
     var captionFor: (Episode) -> String? = { _ in nil }
     var actionDescription: String = "Show details"
+    /// Numbers the cards 1, 2, 3… — the chart rail, and nothing else.
+    var ranked: Bool = false
 
     @FocusState.Binding var focusedEpisode: String?
     var onSelect: (Episode) -> Void
@@ -30,14 +32,15 @@ struct EpisodeRail: View {
 
             ScrollView(.horizontal) {
                 HStack(alignment: .top, spacing: Theme.Metrics.cardGap) {
-                    ForEach(episodes) { episode in
+                    ForEach(Array(episodes.enumerated()), id: \.element.id) { index, episode in
                         EpisodeCard(
                             episode: episode,
                             width: cardWidth,
                             artHeight: artHeight,
                             resume: resumeFor(episode),
                             captionOverride: captionFor(episode),
-                            actionDescription: actionDescription
+                            actionDescription: actionDescription,
+                            rank: ranked ? index + 1 : nil
                         ) {
                             onSelect(episode)
                         }

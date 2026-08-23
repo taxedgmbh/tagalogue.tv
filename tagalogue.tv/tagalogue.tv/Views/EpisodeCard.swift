@@ -23,6 +23,8 @@ struct EpisodeCard: View {
     var captionOverride: String? = nil
     /// Home's Continue Watching plays straight from the card; grids open detail.
     var actionDescription: String = "Show details"
+    /// Position in the chart, when this card is in one. 1-based.
+    var rank: Int? = nil
     var action: () -> Void
 
     @FocusState private var focused: Bool
@@ -39,7 +41,11 @@ struct EpisodeCard: View {
             .accessibilityLabel(episode.accessibilityDescription)
             // The badge itself is hidden from VoiceOver, so "watched" has to
             // reach it here or it is a purely visual state.
-            .accessibilityValue(resume?.isComplete == true ? "\(caption). Watched" : caption)
+            .accessibilityValue(
+                [rank.map { "Number \($0)" }, caption,
+                 resume?.isComplete == true ? "Watched" : nil]
+                    .compactMap(\.self).joined(separator: ". ")
+            )
             .accessibilityHint(actionDescription)
 
             Text(episode.title)
@@ -87,6 +93,21 @@ struct EpisodeCard: View {
         .overlay(alignment: .topTrailing) {
             if resume?.isComplete == true {
                 WatchedBadge().padding(10)
+            }
+        }
+        // The chart numeral. Paper, not accent — red is focus, the primary
+        // action and NEW, and a rank is none of those. Set outside the art on
+        // the leading edge so it reads as a position rather than as a label
+        // printed on the picture.
+        .overlay(alignment: .bottomLeading) {
+            if let rank {
+                Text("\(rank)")
+                    .archivo(.black, 96, tracking: -0.04)
+                    .foregroundStyle(Theme.paper)
+                    .shadow(color: Theme.ink.opacity(0.9), radius: 10, y: 2)
+                    .padding(.leading, 14)
+                    .padding(.bottom, 10)
+                    .accessibilityHidden(true)
             }
         }
     }

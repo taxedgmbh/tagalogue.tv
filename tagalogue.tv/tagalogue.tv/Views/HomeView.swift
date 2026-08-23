@@ -196,6 +196,20 @@ struct HomeView: View {
                 )
             }
 
+            // The chart. Absent entirely when there are no numbers — an
+            // empty "Top 10 today" claims nobody watched anything, which is a
+            // different statement from "we do not know yet".
+            if !catalog.topEpisodes.isEmpty {
+                EpisodeRail(
+                    title: "Top 10 today",
+                    episodes: catalog.topEpisodes,
+                    resumeFor: { resume(for: $0) },
+                    ranked: true,
+                    focusedEpisode: $cardFocus,
+                    onSelect: onDetail
+                )
+            }
+
             // Above Latest on purpose: something about to go is more urgent
             // than something that just arrived.
             if !catalog.leavingSoon().isEmpty {
@@ -268,7 +282,7 @@ struct HomeView: View {
     }
 
     private var allRailEpisodes: [Episode] {
-        resumable.map(\.0) + myList + catalog.leavingSoon()
+        resumable.map(\.0) + myList + catalog.topEpisodes + catalog.leavingSoon()
             + catalog.latest() + catalog.allEpisodes
     }
 }
