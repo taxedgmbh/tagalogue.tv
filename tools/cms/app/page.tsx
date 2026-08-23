@@ -193,9 +193,22 @@ export default async function Home() {
                 {latest.map((e) => (
                   <article key={e.id} className="card">
                     <div className="card-art">
-                      {poster(e)
-                        ? <img src={poster(e)!} alt={e.title} loading="lazy" decoding="async" />
-                        : <span className="card-hatch" />}
+                      {poster(e) ? (
+                        <>
+                          {/* The same frame twice: a blurred copy filling the
+                              card, and the whole frame held inside it. Phone
+                              video is portrait, and cropping a 9:16 still into
+                              a 16:9 card takes a band out of the middle — for
+                              one of these that was a strip of blank wall. A
+                              real 16:9 still fills the card exactly and the
+                              wash never shows, so this costs landscape
+                              nothing. */}
+                          <img className="card-wash" src={poster(e)!} alt="" aria-hidden="true"
+                               loading="lazy" decoding="async" />
+                          <img className="card-frame" src={poster(e)!} alt={e.title}
+                               loading="lazy" decoding="async" />
+                        </>
+                      ) : <span className="card-hatch" />}
                     </div>
                     <h3 className="card-title">{e.title}</h3>
                     <p className="card-meta">

@@ -604,7 +604,8 @@ export default function Page() {
                     ))}
                   </div>
                 ) : keepArtwork ? (
-                  <img src={keepArtwork} alt="" style={{ width: 220, border: '2px solid var(--rule)' }} />
+                  <img className="keep-artwork" src={keepArtwork} alt="Current thumbnail"
+                       style={{ width: 220, aspectRatio: '1 / 1', border: '2px solid var(--ink-rule)' }} />
                 ) : (
                   <p style={{ color: 'var(--dimmer)' }}>Reading frames…</p>
                 )}
