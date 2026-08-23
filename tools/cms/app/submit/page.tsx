@@ -9,6 +9,9 @@ import { useState } from 'react'
  * screen: three fields, one button, and a plain statement of what happens next.
  * Nothing here publishes anything — every submission waits for a human.
  */
+import SiteHeader from '../_components/SiteHeader'
+import SiteFooter from '../_components/SiteFooter'
+
 export default function Submit() {
   const [name, setName] = useState('')
   const [place, setPlace] = useState('')
@@ -42,20 +45,29 @@ export default function Submit() {
 
   if (stage === 'sent') {
     return (
-      <main className="sub">
+      <>
+        <SiteHeader />
+        <div className="band band--paper">
+          <main className="sub sub--public">
         <div className="mark" />
         <h1>Thank you</h1>
         <p className="lede">
           Your video is with the Tagalogue TV team. Someone reads every one, so it may be a
           few days before it appears on the channel.
         </p>
-        <button className="action" onClick={() => window.location.reload()}>Send another</button>
-      </main>
+            <button className="action" onClick={() => window.location.reload()}>Send another</button>
+          </main>
+        </div>
+        <SiteFooter />
+      </>
     )
   }
 
   return (
-    <main className="sub">
+    <>
+      <SiteHeader />
+      <div className="band band--paper">
+        <main className="sub sub--public">
       <div className="mark" />
       <p className="eyebrow">Tagalogue TV · Community</p>
       <h1>Share your thoughts</h1>
@@ -102,7 +114,10 @@ export default function Submit() {
         By sending, you agree the channel may broadcast your video. Nothing appears on the
         channel until a person has watched it.
       </p>
-    </main>
+        </main>
+      </div>
+      <SiteFooter />
+    </>
   )
 }
 

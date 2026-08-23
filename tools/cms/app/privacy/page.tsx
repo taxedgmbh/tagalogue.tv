@@ -1,3 +1,6 @@
+import SiteHeader from '../_components/SiteHeader'
+import SiteFooter from '../_components/SiteFooter'
+
 export const metadata = {
   title: 'Privacy — Tagalogue TV',
   description: 'What Tagalogue TV collects, which is very little, and what happens to it.',
@@ -5,8 +8,11 @@ export const metadata = {
 
 export default function Privacy() {
   return (
-    <main className="site">
-      <section className="site-hero">
+    <>
+      <SiteHeader />
+      <main className="site">
+        <header className="band band--ink site-hero site-hero--compact">
+          <div className="band-inner">
         <p className="eyebrow">Tagalogue TV</p>
         <h1 className="site-title">Privacy</h1>
         <p className="site-lede">
@@ -14,9 +20,13 @@ export default function Privacy() {
           advertising, and what it remembers about your viewing never leaves your
           television.
         </p>
-      </section>
+          </div>
+        </header>
+        <div className="site-hero-rule" />
 
-      <section className="site-section policy">
+        <section className="band band--paper site-section">
+          <div className="band-inner">
+            <div className="policy">
         <h2>Who is responsible</h2>
         <p>
           Tagalogue TV is operated by <strong>Taxed GmbH</strong>, Aegertenstrasse 10,
@@ -97,7 +107,11 @@ export default function Privacy() {
         </p>
 
         <p className="updated">Last updated 23 August 2026</p>
-      </section>
-    </main>
+            </div>
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   )
 }

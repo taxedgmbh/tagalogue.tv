@@ -194,6 +194,29 @@ a link to submit). `/admin` is the editor — everything that publishes, edits o
 what is open and nothing else is, so adding a public page can never widen the hole around the
 tool. The editor lives at `/admin` rather than `/` for exactly that reason.
 
+Deny-by-default catches more than pages: `app/icon.png`, `app/apple-icon.png` and
+`app/opengraph-image.png` are Next file-convention **routes**, not `/public` files, so they
+need naming in `isPublicPath` — without it every link preview fetches the sign-in page.
+
+**The public site splits the ground; the television does not.** `/`, the policy pages and
+`/submit` run the same Modernist system the right way up: an ink masthead, hero and footer
+carrying the brand, everything read at length on paper (`#f3f2f2`, text `#201e1d`), and one
+full field of red for the closing banner — the one place the design system's own readme
+allows the accent to run as a field. A whole site of type on `#0b0a0a` read as a void,
+especially with nothing published. The light tokens are lifted from
+`_ds/modernist-<id>/styles.css`, not invented. `/admin` and `/login` stay on ink.
+
+Structurally, `.site` is a full-width flow and each section is a `.band` owning its ground
+full-bleed with a `.band-inner` holding the measure — so **do not put a `max-width` back on
+`.site`**, which is what made a split ground impossible before. Chrome is shared:
+`app/_components/SiteHeader.tsx` and `SiteFooter.tsx`. Note `#ec3013` measures 3.83:1 on
+paper — fine for display type, rules and button fills, not for body copy or small links,
+which use `--accent-deep` (`#ae1800`, 6.5:1).
+
+`globals.css` is one flat namespace shared with the editor, and the public rules used to be
+written last: `.panel` and `.steps` were each defined twice and silently restyled `/admin`.
+The public ones are now `.site-panel` and `.site-steps`. **Prefix anything new.**
+
 **Secrets need a deploy.** `wrangler secret put` stores the value immediately and
 `wrangler secret list` confirms it, but the running Worker keeps reading the previous one
 until `npm run deploy`. This wasted an afternoon once: a correct Stream token returned

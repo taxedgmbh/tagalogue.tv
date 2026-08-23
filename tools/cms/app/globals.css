@@ -7,14 +7,37 @@
   --ink-raised: #141312;
   --paper: #f3f2f2;
   --accent: #ec3013;
-  --rule: rgba(243, 242, 242, 0.22);
-  --rule-strong: rgba(243, 242, 242, 0.4);
-  --dim: rgba(243, 242, 242, 0.6);
+  /* Non-text UI needs 3:1 against the ink ground. Paper at 0.22 measures
+     1.83:1 — the television corrected this to 0.40 (~3.6:1) in
+     Theme.Metrics.idleRuleOpacity and the web never followed. It does now. */
+  --rule: rgba(243, 242, 242, 0.4);
+  --rule-strong: rgba(243, 242, 242, 0.55);
+  --dim: rgba(243, 242, 242, 0.78);
   --dimmer: rgba(243, 242, 242, 0.42);
   /* Small uppercase labels need more contrast than body text, not less. */
   --label: rgba(243, 242, 242, 0.66);
   /* One measure for every run of prose on the public site. */
   --measure: 68ch;
+
+  /* ── The light side ──────────────────────────────────────────────────────
+     The public site is the same Modernist system the television inverts, so
+     these are lifted from its own token sheet rather than invented:
+     "Tagalogue Apple TV app mockups/_ds/modernist-<id>/styles.css".
+     Every value below is checked against #f3f2f2 for contrast. */
+  --paper-surface: #eae9e9;     /* DS --color-surface */
+  --ink-text: #201e1d;          /* DS --color-text — 14.8:1 on paper */
+  --ink-dim: rgba(32, 30, 29, 0.72);    /* body copy — 6.3:1 */
+  --ink-dimmer: rgba(32, 30, 29, 0.66); /* meta and labels — 4.9:1 */
+  --ink-rule: rgba(32, 30, 29, 0.18);   /* hairlines and tile gaps */
+  --ink-rule-strong: #201e1d;           /* the rules the grid is meant to show */
+  --accent-tint: #fff2ef;       /* DS --color-accent-100 */
+  /* #ec3013 measures 3.83:1 on paper: fine for display type, rules and button
+     fills, not for body copy. Small text and links on light use this instead,
+     which measures 6.5:1. */
+  --accent-deep: #ae1800;       /* DS --color-accent-700 */
+  --n-300: #d7d3d3;
+  --n-500: #9b9797;
+  --n-700: #605d5d;
 }
 
 * { box-sizing: border-box; }
@@ -24,7 +47,7 @@ html, body {
   padding: 0;
   background: var(--ink);
   color: var(--paper);
-  font-family: Archivo, system-ui, -apple-system, sans-serif;
+  font-family: var(--font-archivo), Archivo, system-ui, -apple-system, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -111,12 +134,12 @@ input, textarea, select, button { border-radius: 0; font-family: inherit; }
 @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
 
 .field { margin-bottom: 22px; }
-input[type='text'], textarea, select {
+input[type='text'], input[type='password'], textarea, select {
   width: 100%; background: transparent; color: var(--paper);
   border: 2px solid var(--rule); padding: 13px 14px;
   font-size: 16px; outline: none;
 }
-input[type='text']:focus, textarea:focus, select:focus { border-color: var(--accent); }
+input[type='text']:focus, input[type='password']:focus, textarea:focus, select:focus { border-color: var(--accent); }
 textarea { min-height: 96px; resize: vertical; }
 select option { background: var(--ink); }
 
@@ -296,150 +319,263 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .queue .meta { color: var(--dimmer); font-size: 12px; margin-top: 6px; }
 @media (max-width: 760px) { .queue li { grid-template-columns: 1fr; } .queue video { width: 100%; } }
 
-/* ── The public site (/) ──────────────────────────────────────────────────
-   Same system as the tool and the television: Archivo, ink ground, one red,
-   zero radius, flush left. Wider measure than the editor because this is read,
-   not operated. */
+/* ── The public site ──────────────────────────────────────────────────────
+   The same Modernist system, but the right way up. The television inverts it
+   onto ink because a television is a dark room; a web page read at a desk is
+   not, and a whole site of type on #0b0a0a reads as a void — especially while
+   the channel has nothing published.
 
+   So the ground is split. Ink carries the brand — the masthead, the hero and
+   the footer, where the lockup lives and where the logo's baked-in black is
+   invisible rather than a problem. Everything read at length sits on paper.
+   Red still marks one thing at a time, plus the one full field the design
+   system sanctions: "the landing's closing banner".
+
+   Structure: .site is a full-width flow, and every section is a .band that
+   owns its ground full-bleed with a .band-inner holding the measure. */
+
+.band { width: 100%; }
+.band-inner { max-width: 1120px; margin: 0 auto; padding: 0 40px; }
+
+.band--ink { background: var(--ink); color: var(--paper); }
+.band--paper { background: var(--paper); color: var(--ink-text); }
+.band--surface { background: var(--paper-surface); color: var(--ink-text); }
+.band--accent { background: var(--accent); color: #fff; }
+
+/* The masthead. Ink, so the lockup sits on the ground it was drawn for. */
 .topbar {
   position: sticky; top: 0; z-index: 20;
-  padding: 0;
-  background: rgba(11, 10, 10, 0.92);
-  backdrop-filter: blur(10px);
+  background: rgba(11, 10, 10, 0.94);
+  backdrop-filter: blur(12px);
   border-bottom: 2px solid var(--rule);
 }
 .topbar-inner {
-  max-width: 960px; margin: 0 auto; padding: 13px 32px;
+  max-width: 1120px; margin: 0 auto; padding: 14px 40px;
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
 }
 .topbar-brand {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 13px;
   color: var(--paper); text-decoration: none;
-  font-weight: 900; letter-spacing: -0.02em; font-size: 17px;
+  font-weight: 900; letter-spacing: -0.03em; font-size: 19px;
 }
 .topbar-brand img { display: block; }
-.topbar-links { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.topbar-links { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .topbar-links a {
-  padding: 9px 13px; color: var(--dim); text-decoration: none;
-  font-size: 14px; font-weight: 600;
+  padding: 9px 14px; color: var(--dim); text-decoration: none;
+  font-size: 15px; font-weight: 600;
 }
 .topbar-links a:hover, .topbar-links a:focus-visible { color: var(--paper); }
-.topbar-signin {
-  border: 2px solid var(--rule-strong);
-  color: var(--paper) !important; font-weight: 700 !important;
-}
-.topbar-signin:hover, .topbar-signin:focus-visible {
-  border-color: var(--accent); color: var(--accent) !important;
-}
 
-.site { max-width: 960px; margin: 0 auto; padding: 0 32px 96px; }
+.site { max-width: none; margin: 0; padding: 0; }
 
-.site-hero { padding: 68px 0 56px; border-bottom: 2px solid var(--rule); }
+/* ── Hero ─────────────────────────────────────────────────────────────────
+   No photography exists for this channel, so the hero is carried by type and
+   by the television's own "no artwork yet" hatch rather than by a stock image
+   standing in for a community it does not show. */
+.site-hero { position: relative; overflow: hidden; }
+.site-hero::after {
+  content: ''; position: absolute; inset: 0 0 0 auto; width: 46%;
+  background: repeating-linear-gradient(115deg, #232120 0 14px, #1a1817 14px 28px);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 62%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 62%);
+  pointer-events: none;
+}
+.site-hero > .band-inner {
+  position: relative; z-index: 1;
+  padding-top: 104px; padding-bottom: 92px;
+}
 .site-title {
-  font-size: clamp(34px, 4.9vw, 60px);
-  line-height: 1.06; letter-spacing: -0.028em;
-  max-width: 19ch; margin: 12px 0 0; text-wrap: balance;
+  font-size: clamp(44px, 6.2vw, 92px);
+  line-height: 1.03; letter-spacing: -0.032em;
+  max-width: 15ch; margin: 18px 0 0; text-wrap: balance;
 }
 .site-lede {
-  margin-top: 20px; max-width: 54ch;
-  font-size: 19px; line-height: 1.58; color: var(--dim);
+  margin-top: 26px; max-width: 54ch;
+  font-size: 22px; line-height: 1.5; color: var(--dim);
 }
-.site-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 36px; }
+.site-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 44px; }
 
-/* Not a button: nothing to press yet, and it must not pretend otherwise. */
-.pill {
-  display: inline-block; padding: 13px 20px;
-  background: var(--accent); color: #fff;
-  font-weight: 800; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
+/* Closes the ink off against the paper below it — the accent rule the Top
+   Shelf artwork ends on, full bleed. */
+.site-hero-rule { height: 4px; background: var(--accent); }
+
+/* Small uppercase labels. This had no base rule at all, so it rendered as a
+   plain body paragraph on the landing page and on every policy page. */
+.eyebrow {
+  font-size: 12px; font-weight: 800; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--accent);
 }
+.band--paper .eyebrow, .band--surface .eyebrow { color: var(--accent-deep); }
+.band--accent .eyebrow { color: rgba(255, 255, 255, 0.82); }
+
+/* Not a button. Nothing to press yet, and beside a real button the old solid
+   red pill read as one that was broken — so it is now plainly a status. */
+.status-chip {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 11px 18px; border: 2px solid var(--rule);
+  font-weight: 700; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--dim);
+}
+.status-chip::before {
+  content: ''; width: 9px; height: 9px; background: var(--accent); flex: none;
+}
+.band--paper .status-chip, .band--surface .status-chip {
+  border-color: var(--ink-rule); color: var(--ink-dimmer);
+}
+
 .ghost, .solid {
-  display: inline-block; padding: 12px 20px; text-decoration: none;
-  font-weight: 700; font-size: 14px; letter-spacing: 0.04em;
+  display: inline-block; padding: 15px 26px; text-decoration: none;
+  font-weight: 800; font-size: 15px; letter-spacing: 0.04em;
 }
 .ghost { border: 2px solid var(--rule-strong); color: var(--paper); }
 .ghost:hover, .ghost:focus-visible { border-color: var(--accent); color: var(--accent); }
 .solid { background: var(--accent); color: #fff; font-weight: 800; }
-.solid:hover, .solid:focus-visible { filter: brightness(1.12); }
-
-.facts {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 2px; margin: 44px 0 0;
+.solid:hover, .solid:focus-visible { background: var(--accent-deep); }
+.band--paper .ghost, .band--surface .ghost { border-color: var(--ink-rule-strong); color: var(--ink-text); }
+.band--paper .ghost:hover, .band--paper .ghost:focus-visible,
+.band--surface .ghost:hover, .band--surface .ghost:focus-visible {
+  border-color: var(--accent); color: var(--accent-deep);
 }
-.facts > div { background: var(--ink-raised); padding: 18px 20px; }
+/* On the red field the outline button inverts: white on red. */
+.band--accent .ghost { border-color: #fff; color: #fff; }
+.band--accent .ghost:hover, .band--accent .ghost:focus-visible { background: #fff; color: var(--accent-deep); }
+
+/* ── The facts strip, on the seam between ink and paper ───────────────────
+   Out of the hero and onto its own band, where it reads as a spec table
+   rather than as four barely-visible boxes 4% lighter than the ground. */
+.facts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0; margin: 0; border-bottom: 2px solid var(--ink-rule);
+}
+.facts > div { padding: 26px 20px 28px; border-left: 2px solid var(--ink-rule); }
+.facts > div:first-child { border-left: 0; padding-left: 0; }
 .facts dt {
-  font-size: 11px; font-weight: 800; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--label);
+  font-size: 11px; font-weight: 800; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink-dimmer);
 }
 .facts dd {
-  margin: 8px 0 0; font-size: 19px; font-weight: 900;
-  letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
-  text-wrap: balance;
+  /* Fluid, so "Tagalog \00b7 English" does not break across a middot in the
+     narrow columns this strip has at middling widths. */
+  margin: 10px 0 0; font-size: clamp(17px, 1.75vw, 21px); font-weight: 900;
+  letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
+  color: var(--ink-text);
 }
 
-.site-section { padding: 72px 0 0; scroll-margin-top: 92px; }
+/* ── Sections ─────────────────────────────────────────────────────────────
+   Kicker over a display head, the way the design system pairs them. The
+   kicker alone was doing the work of a heading at 12px and 66% opacity, which
+   is why every section read at the same faint weight. */
+.site-section > .band-inner { padding-top: 96px; padding-bottom: 96px; }
+.band--paper + .band--paper { border-top: 2px solid var(--ink-rule); }
+.site-section { scroll-margin-top: 76px; }
 .site-h2 {
   font-size: 12px; font-weight: 800; letter-spacing: 0.18em;
-  text-transform: uppercase; color: var(--label); margin-bottom: 22px;
+  text-transform: uppercase; color: var(--accent-deep); margin-bottom: 14px;
 }
-.site-empty { color: var(--dim); font-size: 17px; max-width: var(--measure); line-height: 1.6; }
-.prose { color: var(--dim); font-size: 17px; line-height: 1.65; max-width: var(--measure); }
+.band--ink .site-h2 { color: var(--accent); }
+.band--accent .site-h2 { color: rgba(255, 255, 255, 0.82); }
+.site-head {
+  font-size: clamp(32px, 3.6vw, 46px); font-weight: 900;
+  line-height: 1.06; letter-spacing: -0.03em; margin: 0 0 40px;
+  max-width: 22ch; text-wrap: balance;
+}
+.prose {
+  color: var(--ink-dim); font-size: 19px; line-height: 1.65; max-width: var(--measure);
+}
+.band--ink .prose { color: var(--dim); }
 
-.strands { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2px; }
-.strand { background: var(--ink-raised); padding: 26px 24px 24px; border-top: 4px solid var(--accent); }
-.strand-name { font-size: 24px; font-weight: 900; letter-spacing: -0.02em; }
-.strand-sub { margin-top: 8px; color: var(--dim); font-size: 15px; line-height: 1.45; }
+/* ── The strand board ─────────────────────────────────────────────────────
+   Always three cells, drawn from STRANDS and COMMUNITY_STRAND, with live
+   counts laid over them. It describes the shape of the channel, which is true
+   whether or not anything is published — where the old markup dropped the
+   whole section to one grey sentence the moment the catalog was empty. */
+.strands { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+.strand { display: flex; flex-direction: column; border-top: 4px solid var(--accent); }
+.strand-art {
+  aspect-ratio: 16 / 9;
+  background: repeating-linear-gradient(115deg, #e4e2e2 0 12px, #dbd9d9 12px 24px);
+}
+.strand-body { padding: 22px 0 0; }
+.strand-name { font-size: 30px; font-weight: 900; letter-spacing: -0.03em; }
+.strand-sub { margin-top: 10px; color: var(--ink-dim); font-size: 16px; line-height: 1.5; }
 .strand-count {
-  margin-top: 18px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--label); font-variant-numeric: tabular-nums;
+  margin-top: 18px; font-size: 12px; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-dimmer); font-variant-numeric: tabular-nums;
 }
 
-.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 26px 22px; }
-.card-art { aspect-ratio: 16 / 9; background: var(--ink-raised); overflow: hidden; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 34px 26px; }
+.card-art {
+  aspect-ratio: 16 / 9; background: var(--paper-surface); overflow: hidden;
+  border: 2px solid var(--ink-rule);
+}
 .card-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* The same hatch the television draws for artwork it does not have. */
 .card-hatch {
   display: block; width: 100%; height: 100%;
-  background: repeating-linear-gradient(115deg, #232120 0 10px, #1c1a19 10px 20px);
+  background: repeating-linear-gradient(115deg, #e4e2e2 0 10px, #dbd9d9 10px 20px);
 }
-.card-title { margin-top: 12px; font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+.card-title { margin-top: 14px; font-size: 19px; font-weight: 800; letter-spacing: -0.015em; }
 .card-meta {
-  margin-top: 5px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--label);
+  margin-top: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-dimmer);
 }
 
-.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.steps li {
-  display: grid; grid-template-columns: 62px 1fr; gap: 18px; align-items: start;
-  background: var(--ink-raised); padding: 22px 24px;
+/* ── How to watch ─────────────────────────────────────────────────────────
+   Renamed off `.steps`, which /admin defines for its upload progress at the
+   top of this file — the public rule came later and was silently overriding
+   it. The numerals do the graphic work a photograph would otherwise do. */
+.site-steps {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 40px 32px;
 }
-.steps strong { font-weight: 800; }
+.site-steps li { border-top: 2px solid var(--ink-rule-strong); padding-top: 20px; }
+.site-steps strong { display: block; font-weight: 900; font-size: 21px; letter-spacing: -0.02em; }
+.site-steps p { margin-top: 10px; color: var(--ink-dim); font-size: 17px; line-height: 1.6; }
 .step-n {
-  font-size: 13px; font-weight: 800; letter-spacing: 0.12em;
-  color: var(--accent); font-variant-numeric: tabular-nums; padding-top: 3px;
+  display: block; font-size: 72px; line-height: 1; font-weight: 900;
+  letter-spacing: -0.04em; color: var(--accent);
+  font-variant-numeric: tabular-nums; margin-bottom: 18px;
 }
 
-.panel { background: var(--ink-raised); border-left: 4px solid var(--accent); padding: 32px 30px; }
-.panel-title { font-size: 27px; font-weight: 900; letter-spacing: -0.02em; }
-.panel-body { margin-top: 12px; color: var(--dim); font-size: 17px; line-height: 1.6; max-width: 62ch; }
-.panel .solid { margin-top: 24px; }
-
-.site-foot {
-  margin-top: 72px; padding-top: 24px; border-top: 2px solid var(--rule);
-  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px;
-  font-size: 13px; color: var(--dimmer); line-height: 1.6;
+/* ── The closing banner ───────────────────────────────────────────────────
+   The one place the design system lets red run as a field: "the deck's
+   section dividers and the landing's closing banner — where type stays
+   display-grade and the accent carries the page". Text here stays large:
+   white on #ec3013 measures 4.25:1, which is comfortable above 19px and not
+   below it. */
+.site-panel > .band-inner { padding-top: 104px; padding-bottom: 104px; }
+.site-panel .site-h2 { margin-bottom: 16px; }
+.panel-title {
+  font-size: clamp(34px, 4.4vw, 58px); font-weight: 900;
+  letter-spacing: -0.032em; line-height: 1.05; max-width: 18ch; text-wrap: balance;
 }
-.site-foot strong { color: var(--paper); font-weight: 800; }
-.site-foot-links { display: flex; gap: 18px; }
-.site-foot-links a { color: var(--dim); text-decoration: none; font-weight: 600; }
-.site-foot-links a:hover, .site-foot-links a:focus-visible { color: var(--accent); }
-.site-foot-meta { font-variant-numeric: tabular-nums; }
+.panel-body {
+  margin-top: 22px; font-size: 21px; line-height: 1.55; max-width: 58ch;
+  color: rgba(255, 255, 255, 0.92);
+}
+.panel-body strong { color: #fff; font-weight: 800; }
+.site-panel .ghost { margin-top: 34px; }
 
+@media (max-width: 900px) {
+  .site-hero::after { display: none; }
+  .facts > div { border-left: 0; padding-left: 0; }
+}
 @media (max-width: 720px) {
-  .topbar-inner { padding: 11px 18px; }
+  .band-inner { padding: 0 20px; }
+  .topbar-inner { padding: 12px 20px; gap: 14px; }
   .topbar-brand span { display: none; }
-  .site { padding: 0 20px 72px; }
-  .site-hero { padding: 44px 0 40px; }
-  .steps li { grid-template-columns: 44px 1fr; gap: 12px; }
+  /* Four links plus the mark do not fit on a phone, and wrapping them turns a
+     sticky bar into two rows of chrome over the page. They scroll instead. */
+  .topbar-links {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .topbar-links::-webkit-scrollbar { display: none; }
+  .topbar-links a { padding: 8px 10px; font-size: 14px; white-space: nowrap; }
+  .site-hero > .band-inner { padding-top: 64px; padding-bottom: 60px; }
+  .site-section > .band-inner { padding-top: 64px; padding-bottom: 64px; }
+  .site-panel > .band-inner { padding-top: 72px; padding-bottom: 72px; }
+  .step-n { font-size: 54px; }
 }
 
 /* Masthead actions — leaving the tool, and ending the session. */
@@ -455,20 +591,32 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 /* Follow — the channel's accounts. Links only: Instagram and Facebook expose
    no public post feed without an API token, so an embedded carousel would be
    either a scraper that breaks or a login wall. See PRODUCTION.md. */
-.socials { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 2px; }
+.socials { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
 .social {
-  display: block; background: var(--ink-raised); padding: 22px 22px 20px;
-  border-top: 4px solid var(--accent); text-decoration: none; color: var(--paper);
+  display: block; padding: 20px 0 0; border-top: 4px solid var(--accent);
+  text-decoration: none; color: var(--ink-text);
 }
-.social:hover, .social:focus-visible { background: #1b1918; }
+.social:hover .social-handle, .social:focus-visible .social-handle { color: var(--accent-deep); }
 .social-net {
   display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.16em;
-  text-transform: uppercase; color: var(--label);
+  text-transform: uppercase; color: var(--ink-dimmer);
 }
 .social-handle {
-  display: block; margin-top: 9px; font-size: 21px; font-weight: 900; letter-spacing: -0.02em;
+  display: block; margin-top: 10px; font-size: 26px; font-weight: 900; letter-spacing: -0.03em;
 }
-.social-note { display: block; margin-top: 8px; font-size: 14px; color: var(--dim); line-height: 1.45; }
+.social-note { display: block; margin-top: 10px; font-size: 15px; color: var(--ink-dim); line-height: 1.5; }
+
+/* ── The footer, back on ink ─────────────────────────────────────────────── */
+.site-foot > .band-inner {
+  padding-top: 56px; padding-bottom: 56px;
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 26px;
+  font-size: 14px; color: var(--dim); line-height: 1.65;
+}
+.site-foot strong { color: var(--paper); font-weight: 800; }
+.site-foot-links { display: flex; flex-wrap: wrap; gap: 18px; }
+.site-foot-links a { color: var(--dim); text-decoration: none; font-weight: 600; }
+.site-foot-links a:hover, .site-foot-links a:focus-visible { color: var(--accent); }
+.site-foot-meta { font-variant-numeric: tabular-nums; color: var(--dimmer); }
 
 /* Colophon — publisher attribution and the sister sites. Ordinary links, no
    rel="nofollow": these are meant to carry weight. */
@@ -476,41 +624,77 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .site-foot-colophon a { color: var(--dim); text-decoration: underline; text-underline-offset: 3px; }
 .site-foot-colophon a:hover, .site-foot-colophon a:focus-visible { color: var(--accent); }
 
-/* Readability: the step rows ran the full 1080px, about a hundred characters a
-   line. Cap the text, not the row. */
-.steps li > span:last-child { max-width: var(--measure); }
-.panel-body { max-width: var(--measure); }
-
-/* Forms on the public site (report). The editor has its own, denser, styling. */
+/* Forms on the public site (report, submit). The editor has its own, denser,
+   styling, and these sit on paper — so the shared `.label` and `.hint`, which
+   are written in paper-on-ink for the editor, are re-coloured here. */
 .form { display: grid; gap: 6px; max-width: 60ch; }
 .form .label { margin-top: 18px; }
-.form input, .form select, .form textarea {
-  background: var(--ink-raised); color: var(--paper);
-  border: 2px solid var(--rule); padding: 12px 14px;
-  font-size: 16px; font-family: inherit; width: 100%;
+.band--paper .label, .band--surface .label,
+.band--paper .hint, .band--surface .hint { color: var(--ink-dimmer); }
+.band--paper .form input, .band--paper .form select, .band--paper .form textarea,
+.band--surface .form input, .band--surface .form select, .band--surface .form textarea {
+  background: #fff; color: var(--ink-text);
+  border: 2px solid var(--ink-rule); padding: 14px 16px;
+  font-size: 17px; font-family: inherit; width: 100%;
 }
-.form input:focus, .form select:focus, .form textarea:focus {
+.band--paper .form input:focus, .band--paper .form select:focus, .band--paper .form textarea:focus,
+.band--surface .form input:focus, .band--surface .form select:focus, .band--surface .form textarea:focus {
   outline: none; border-color: var(--accent);
 }
 .form textarea { resize: vertical; line-height: 1.5; }
 .form .solid { margin-top: 26px; justify-self: start; border: 0; cursor: pointer; font-size: 15px; }
 .form .solid[disabled] { opacity: 0.55; cursor: default; }
-.form-error { margin-top: 14px; color: var(--accent); font-weight: 700; }
+.form-error { margin-top: 14px; color: var(--accent-deep); font-weight: 700; }
 
 /* Policy pages: long-form reading, so a tighter measure and real paragraphs. */
 .policy { max-width: var(--measure); }
 .policy h2 {
-  font-size: 21px; font-weight: 900; letter-spacing: -0.02em;
-  margin: 40px 0 12px;
+  font-size: 26px; font-weight: 900; letter-spacing: -0.025em;
+  margin: 48px 0 14px;
 }
-.policy p, .policy li { color: var(--dim); font-size: 17px; line-height: 1.65; }
-.policy p + p { margin-top: 14px; }
-.policy ul { margin: 12px 0 0; padding-left: 22px; }
-.policy li + li { margin-top: 8px; }
-.policy strong { color: var(--paper); font-weight: 700; }
-.policy a { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+.policy p, .policy li { color: var(--ink-dim); font-size: 18px; line-height: 1.7; }
+.policy p + p { margin-top: 16px; }
+.policy ul { margin: 14px 0 0; padding-left: 22px; }
+.policy li + li { margin-top: 10px; }
+.policy strong { color: var(--ink-text); font-weight: 700; }
+.policy a { color: var(--accent-deep); text-decoration: underline; text-underline-offset: 3px; }
 .policy a:hover { color: var(--accent); }
 .policy .updated {
-  margin-top: 30px; font-size: 12px; font-weight: 700; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--dimmer);
+  margin-top: 40px; padding-top: 20px; border-top: 2px solid var(--ink-rule);
+  font-size: 12px; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-dimmer);
 }
+
+/* Policy pages and forms get the same ink masthead, but a shorter one and no
+   hatch — "Privacy" does not need a 92px display line or a hero treatment. */
+.site-hero--compact > .band-inner { padding-top: 72px; padding-bottom: 60px; }
+.site-hero--compact::after { display: none; }
+.site-hero--compact .site-title {
+  font-size: clamp(38px, 4.4vw, 62px); max-width: 20ch; margin-top: 14px;
+}
+.site-hero--compact .site-lede { font-size: 20px; margin-top: 20px; }
+
+/* /submit keeps its phone-first column — it is filled in on a phone, standing
+   up — and only changes ground. `.sub` itself is left alone because /login
+   shares it and is not part of the public site. */
+.sub--public { color: var(--ink-text); }
+.sub--public .lede,
+.sub--public .warn { color: var(--ink-dim); }
+.sub--public .counter,
+.sub--public .small,
+.sub--public .status,
+.sub--public .opt { color: var(--ink-dimmer); }
+.sub--public input[type='text'],
+.sub--public textarea {
+  background: #fff; color: var(--ink-text); border-color: var(--ink-rule);
+}
+.sub--public input[type='text']:focus,
+.sub--public textarea:focus { border-color: var(--accent); }
+.sub--public .pick {
+  border-color: var(--ink-rule-strong); color: var(--ink-text);
+  background: repeating-linear-gradient(115deg, #e4e2e2 0 12px, #dbd9d9 12px 24px);
+}
+.sub--public .bar { background: var(--n-300); }
+.sub--public .warn { border-left-color: var(--accent); }
+.sub--public .action { background: var(--accent); color: #fff; }
+.sub--public .action:disabled { background: var(--n-300); color: var(--n-700); }

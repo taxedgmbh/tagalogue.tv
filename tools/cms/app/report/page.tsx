@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { REPORT_REASONS } from '@/lib/reports'
+import SiteHeader from '../_components/SiteHeader'
+import SiteFooter from '../_components/SiteFooter'
 
 export default function ReportPage() {
   const [reason, setReason] = useState('')
@@ -28,8 +30,11 @@ export default function ReportPage() {
 
   if (state === 'sent') {
     return (
-      <main className="site">
-        <section className="site-hero">
+      <>
+        <SiteHeader />
+        <main className="site">
+          <header className="band band--ink site-hero site-hero--compact">
+            <div className="band-inner">
           <p className="eyebrow">Report content</p>
           <h1 className="site-title">Thank you — we have it</h1>
           <p className="site-lede">
@@ -37,24 +42,34 @@ export default function ReportPage() {
             and nothing needs to happen on your side.
           </p>
           <div className="site-actions"><a className="ghost" href="/">Back to the channel</a></div>
-        </section>
-      </main>
+            </div>
+          </header>
+          <div className="site-hero-rule" />
+        </main>
+        <SiteFooter />
+      </>
     )
   }
 
   return (
-    <main className="site">
-      <section className="site-hero">
+    <>
+      <SiteHeader />
+      <main className="site">
+        <header className="band band--ink site-hero site-hero--compact">
+          <div className="band-inner">
         <p className="eyebrow">Report content</p>
         <h1 className="site-title">Tell us about something on the channel</h1>
         <p className="site-lede">
           Anyone can report a video, with no account and no sign-in. A person reads every
           report. You can leave a way to reach you, but you do not have to.
         </p>
-      </section>
+          </div>
+        </header>
+        <div className="site-hero-rule" />
 
-      <section className="site-section">
-        <form className="form" onSubmit={send}>
+        <section className="band band--paper site-section">
+          <div className="band-inner">
+            <form className="form" onSubmit={send}>
           <label className="label" htmlFor="reason">What is wrong with it?</label>
           <select id="reason" required value={reason} onChange={(e) => setReason(e.target.value)}>
             <option value="">Choose one…</option>
@@ -77,8 +92,11 @@ export default function ReportPage() {
           <button className="solid" type="submit" disabled={state === 'sending'}>
             {state === 'sending' ? 'Sending…' : 'Send report'}
           </button>
-        </form>
-      </section>
-    </main>
+            </form>
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   )
 }

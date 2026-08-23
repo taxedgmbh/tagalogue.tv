@@ -1,3 +1,6 @@
+import SiteHeader from '../_components/SiteHeader'
+import SiteFooter from '../_components/SiteFooter'
+
 export const metadata = {
   title: 'Terms — Tagalogue TV',
   description: 'The rules for watching Tagalogue TV and for sending a video to the channel.',
@@ -5,17 +8,24 @@ export const metadata = {
 
 export default function Terms() {
   return (
-    <main className="site">
-      <section className="site-hero">
+    <>
+      <SiteHeader />
+      <main className="site">
+        <header className="band band--ink site-hero site-hero--compact">
+          <div className="band-inner">
         <p className="eyebrow">Tagalogue TV</p>
         <h1 className="site-title">Terms of use</h1>
         <p className="site-lede">
           Watching is free and needs no account. Sending something in comes with a few
           rules, and they are short.
         </p>
-      </section>
+          </div>
+        </header>
+        <div className="site-hero-rule" />
 
-      <section className="site-section policy">
+        <section className="band band--paper site-section">
+          <div className="band-inner">
+            <div className="policy">
         <h2>Who we are</h2>
         <p>
           Tagalogue TV is run by <strong>Taxed GmbH</strong>, Aegertenstrasse 10,
@@ -93,7 +103,11 @@ export default function Terms() {
         </p>
 
         <p className="updated">Last updated 23 August 2026</p>
-      </section>
-    </main>
+            </div>
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   )
 }

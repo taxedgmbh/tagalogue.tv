@@ -1,3 +1,6 @@
+import SiteHeader from '../_components/SiteHeader'
+import SiteFooter from '../_components/SiteFooter'
+
 export const metadata = {
   title: 'Support — Tagalogue TV',
   description: 'Help with the Tagalogue TV app on Apple TV, and how to reach a person.',
@@ -5,17 +8,24 @@ export const metadata = {
 
 export default function Support() {
   return (
-    <main className="site">
-      <section className="site-hero">
+    <>
+      <SiteHeader />
+      <main className="site">
+        <header className="band band--ink site-hero site-hero--compact">
+          <div className="band-inner">
         <p className="eyebrow">Tagalogue TV</p>
         <h1 className="site-title">Support</h1>
         <p className="site-lede">
           A real person reads what comes in. Write to{' '}
           <a className="ghost" href="mailto:info@taxed.ch" style={{ marginLeft: 6 }}>info@taxed.ch</a>
         </p>
-      </section>
+          </div>
+        </header>
+        <div className="site-hero-rule" />
 
-      <section className="site-section policy">
+        <section className="band band--paper site-section">
+          <div className="band-inner">
+            <div className="policy">
         <h2>The channel is empty</h2>
         <p>
           If the app says <strong>&ldquo;Nothing on air yet&rdquo;</strong>, there is
@@ -62,7 +72,11 @@ export default function Support() {
           Taxed GmbH, Aegertenstrasse 10, 2503 Biel/Bienne, Switzerland<br />
           <a href="mailto:info@taxed.ch">info@taxed.ch</a>
         </p>
-      </section>
-    </main>
+            </div>
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   )
 }
