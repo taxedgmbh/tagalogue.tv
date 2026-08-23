@@ -1,0 +1,53 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tagalogue-content",
+  // Every deployed version otherwise gets its own public preview URL. The
+  // password protects those too, but an editor tool has no reason to hand out
+  // extra front doors.
+  "preview_urls": false,
+
+  // Routes, not custom domains.
+  //
+  // A Workers *custom domain* refuses a hostname that already has a DNS record,
+  // and this zone came over from Hostinger with its parking A record intact
+  // (error 100117). A *route* has no such problem: the record just has to be
+  // proxied, which it is, and the Worker then intercepts before the origin is
+  // ever contacted — so the parking page behind it is never reached.
+  //
+  // The televisions do NOT read through this Worker. They fetch the catalog
+  // straight from the bucket, so the channel keeps working while this is
+  // redeploying, locked out or broken.
+  "routes": [
+    { "pattern": "tagalogue.tv/*", "zone_name": "tagalogue.tv" },
+    { "pattern": "www.tagalogue.tv/*", "zone_name": "tagalogue.tv" }
+  ],
+
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-08-01",
+  // Next.js needs a handful of Node built-ins even without a filesystem.
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "r2_buckets": [
+    {
+      // The catalog the televisions read, the thumbnails they show, and the
+      // private submission queue. Reached by binding — no access keys exist.
+      "binding": "MEDIA",
+      "bucket_name": "tagalogue-media"
+    }
+  ],
+  "vars": {
+    // None of these are secrets. The two that are — CF_API_TOKEN and
+    // CMS_PASSWORD — are set with `wrangler secret put` and never appear here.
+    //
+    // Named STREAM_ACCOUNT_ID rather than CF_ACCOUNT_ID on purpose: wrangler
+    // reads CF_ACCOUNT_ID to choose which account to deploy to, and a variable
+    // that can silently redirect a deploy should not share a name with one
+    // that only labels API calls.
+    "STREAM_ACCOUNT_ID": "7802758c00472e2af85405e46f04d485",
+    "R2_PUBLIC_BASE_URL": "https://pub-59f39c9e91c34695acada7303f42a801.r2.dev"
+  },
+  "observability": { "enabled": true }
+}

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>tv.tagalogue.appletv.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>tagaloguetv</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>tv.tagalogue.appletv.viewing</string>
+	</array>
+	<!-- Read straight from the bucket on the channel's own hostname, never
+	     through the content tool. A viewer's television must not depend on an
+	     admin app that may be redeploying, locked or broken. The hostname is
+	     ours so the bucket can be moved later without rebuilding the app. -->
+	<key>TagalogueCatalogURL</key>
+	<string>https://cdn.tagalogue.tv/catalog.json</string>
+	<key>TagalogueSubmitURL</key>
+	<string>https://tagalogue.tv/submit</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Archivo-Regular.ttf</string>
+		<string>Archivo-Medium.ttf</string>
+		<string>Archivo-SemiBold.ttf</string>
+		<string>Archivo-Bold.ttf</string>
+		<string>Archivo-ExtraBold.ttf</string>
+		<string>Archivo-Black.ttf</string>
+	</array>
+</dict>
+</plist>

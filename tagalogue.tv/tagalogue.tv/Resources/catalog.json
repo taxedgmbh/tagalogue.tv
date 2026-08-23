@@ -1,0 +1,22 @@
+{
+  "shows": [
+    {
+      "id": "interviews",
+      "title": "Interviews",
+      "subtitle": "Sit-down conversations, recorded across Switzerland",
+      "episodes": []
+    },
+    {
+      "id": "vlogs",
+      "title": "Vlogs",
+      "subtitle": "Life between two countries, as it happens",
+      "episodes": []
+    },
+    {
+      "id": "community",
+      "title": "Community",
+      "subtitle": "Sent in by the people who watch",
+      "episodes": []
+    }
+  ]
+}

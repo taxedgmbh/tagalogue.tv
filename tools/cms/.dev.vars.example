@@ -1,0 +1,24 @@
+# Copy to `.dev.vars` and fill in. That file is gitignored and is read
+# automatically by wrangler in development.
+#
+# These are LIVE CREDENTIALS in plain text on your Mac. Acceptable for
+# development; not acceptable anywhere else. Keep the canonical copy in your
+# password manager, and set the production values with:
+#
+#     npx wrangler secret put CMS_PASSWORD
+#     npx wrangler secret put CF_API_TOKEN
+#
+# Nothing here is needed to run the tool locally against a simulated bucket —
+# only to talk to the real Stream account.
+
+# Not a secret; it appears in URLs. Kept here so one file has everything.
+STREAM_ACCOUNT_ID = ""
+
+# Secret. Scope it to Account ▸ Stream ▸ Edit and nothing else.
+CF_API_TOKEN = ""
+
+# Secret. The password for the editor. Long and random.
+CMS_PASSWORD = ""
+
+# The customer-<CODE> subdomain from the Stream page. Not a secret.
+CF_CUSTOMER_CODE = ""

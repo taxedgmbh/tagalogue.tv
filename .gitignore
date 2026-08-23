@@ -1,0 +1,32 @@
+# ── Never commit ──────────────────────────────────────────────────────────
+# Live Cloudflare credentials. Kept outside the app source tree so no build
+# can bundle them; kept out of here so no push can publish them.
+credentials/
+*.plist.local
+
+# Local secrets for the content tool.
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.env
+.env.*
+!.env.example
+.env.secrets*
+
+# ── Build output and caches ───────────────────────────────────────────────
+node_modules/
+.next/
+.open-next/
+.wrangler/
+.vercel/
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Local media the content tool wrote while running against the filesystem.
+# Hundreds of megabytes of test video; the real thing lives on Cloudflare.
+tools/cms/.data/
+
+# ── macOS ─────────────────────────────────────────────────────────────────
+.DS_Store

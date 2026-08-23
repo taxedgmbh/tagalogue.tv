@@ -1,0 +1,17 @@
+node_modules/
+.next/
+.open-next/
+.data/
+next-env.d.ts
+
+# ── Secrets. Nothing below this line may ever be committed. ────────────────
+# `.dev.vars` is wrangler's local secret file and is read automatically in
+# development. `.env*` covers Next's own. Both hold live credentials in plain
+# text; the canonical copy belongs in a password manager, and the production
+# copy belongs in `wrangler secret put`.
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+!.env.example
+!.dev.vars.example
