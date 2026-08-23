@@ -254,6 +254,10 @@ export default async function Home() {
             <a href="https://www.facebook.com/Tagaloguetv" target="_blank" rel="noreferrer">Facebook</a>
             <a href="https://www.instagram.com/tagaloguetv/" target="_blank" rel="noreferrer">Instagram</a>
             <a href="/submit">Submit a video</a>
+            <a href="/support">Support</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
+            <a href="/report">Report content</a>
             <a href="/admin">Editor sign-in</a>
           </div>
           <div className="site-foot-colophon">

@@ -77,6 +77,11 @@ export function isPublicPath(pathname: string, method: string): boolean {
   // Crawler-facing files. Without these the middleware sends a search engine to
   // /login, which means no sitemap and — worse — no Disallow on /admin.
   if (pathname === '/robots.txt' || pathname === '/sitemap.xml') return true
+  // Published policies and the content-report path. App Review expects all of
+  // these to be reachable without an account, and the report endpoint to work
+  // for someone who has never signed in.
+  if (['/privacy', '/terms', '/support', '/report'].includes(pathname)) return true
+  if (pathname === '/api/report' && method === 'POST') return true
   if (pathname === '/login' || pathname === '/api/login') return true
   if (pathname.startsWith('/brand/')) return true
   if (pathname === '/api/submit' || pathname === '/api/submit/complete') return true

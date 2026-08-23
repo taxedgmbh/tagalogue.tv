@@ -480,3 +480,37 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
    line. Cap the text, not the row. */
 .steps li > span:last-child { max-width: var(--measure); }
 .panel-body { max-width: var(--measure); }
+
+/* Forms on the public site (report). The editor has its own, denser, styling. */
+.form { display: grid; gap: 6px; max-width: 60ch; }
+.form .label { margin-top: 18px; }
+.form input, .form select, .form textarea {
+  background: var(--ink-raised); color: var(--paper);
+  border: 2px solid var(--rule); padding: 12px 14px;
+  font-size: 16px; font-family: inherit; width: 100%;
+}
+.form input:focus, .form select:focus, .form textarea:focus {
+  outline: none; border-color: var(--accent);
+}
+.form textarea { resize: vertical; line-height: 1.5; }
+.form .solid { margin-top: 26px; justify-self: start; border: 0; cursor: pointer; font-size: 15px; }
+.form .solid[disabled] { opacity: 0.55; cursor: default; }
+.form-error { margin-top: 14px; color: var(--accent); font-weight: 700; }
+
+/* Policy pages: long-form reading, so a tighter measure and real paragraphs. */
+.policy { max-width: var(--measure); }
+.policy h2 {
+  font-size: 21px; font-weight: 900; letter-spacing: -0.02em;
+  margin: 40px 0 12px;
+}
+.policy p, .policy li { color: var(--dim); font-size: 17px; line-height: 1.65; }
+.policy p + p { margin-top: 14px; }
+.policy ul { margin: 12px 0 0; padding-left: 22px; }
+.policy li + li { margin-top: 8px; }
+.policy strong { color: var(--paper); font-weight: 700; }
+.policy a { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+.policy a:hover { color: var(--accent); }
+.policy .updated {
+  margin-top: 30px; font-size: 12px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--dimmer);
+}
