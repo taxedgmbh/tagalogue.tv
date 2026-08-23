@@ -96,5 +96,7 @@ if __name__ == "__main__":
         sys.exit(__doc__)
     status, data = call(sys.argv[1].upper(), sys.argv[2],
                         sys.argv[3] if len(sys.argv) > 3 else None)
-    print(f"HTTP {status}")
-    print(json.dumps(data, indent=2)[:6000] if data is not None else "")
+    # Full body, not truncated: callers pipe this into json.loads, and a cut
+    # response is invalid JSON rather than a shorter one.
+    print(f"HTTP {status}", file=sys.stderr)
+    print(json.dumps(data, indent=2) if data is not None else "")

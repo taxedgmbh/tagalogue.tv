@@ -2,6 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- Required: App Store Connect rejects a 64-bit tvOS binary that does not
+	     declare this (error 90502). Xcode does not add it to a hand-written
+	     Info.plist, and the Top Shelf extension has its own. -->
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
