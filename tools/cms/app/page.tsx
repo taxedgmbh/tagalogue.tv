@@ -23,6 +23,9 @@ export const metadata = {
     'A Filipino–Swiss channel from Biel/Bienne. Interviews, vlogs and stories sent in by the '
     + 'community, in Tagalog and English, free on Apple TV. Published by Taxed GmbH.',
   alternates: { canonical: '/' },
+  applicationName: 'Tagalogue TV',
+  publisher: 'Taxed GmbH',
+  category: 'entertainment',
   openGraph: {
     title: 'Tagalogue TV',
     description:
@@ -37,9 +40,14 @@ export const metadata = {
 // Structured data. This is the part search engines actually read for entity
 // and publisher relationships — `sameAs` ties the accounts to the channel and
 // `parentOrganization` ties the channel to Taxed GmbH.
+//
+// Emitted as an @graph so the Organization and the WebSite are one connected
+// description rather than two unrelated blobs; `publisher` on the WebSite is
+// what lets Google show "Tagalogue TV" as the site name in results instead of
+// guessing from the domain.
 const ORGANISATION = {
-  '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': 'https://tagalogue.tv/#organisation',
   name: 'Tagalogue TV',
   url: 'https://tagalogue.tv',
   logo: 'https://tagalogue.tv/brand/tagalogue-lockup.png',
@@ -67,6 +75,19 @@ const ORGANISATION = {
     brand: { '@type': 'Brand', name: 'Skopa', url: 'https://skopa.ai' },
   },
 }
+
+const WEBSITE = {
+  '@type': 'WebSite',
+  '@id': 'https://tagalogue.tv/#website',
+  url: 'https://tagalogue.tv',
+  name: 'Tagalogue TV',
+  description:
+    'Filipino–Swiss interviews, vlogs and community stories. Free on Apple TV.',
+  inLanguage: 'en',
+  publisher: { '@id': 'https://tagalogue.tv/#organisation' },
+}
+
+const GRAPH = { '@context': 'https://schema.org', '@graph': [ORGANISATION, WEBSITE] }
 
 /**
  * The three strands the channel is made of, in running order.
@@ -103,7 +124,7 @@ export default async function Home() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANISATION) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(GRAPH) }}
       />
       <SiteHeader sections />
 
@@ -172,7 +193,9 @@ export default async function Home() {
                 {latest.map((e) => (
                   <article key={e.id} className="card">
                     <div className="card-art">
-                      {poster(e) ? <img src={poster(e)!} alt="" loading="lazy" /> : <span className="card-hatch" />}
+                      {poster(e)
+                        ? <img src={poster(e)!} alt={e.title} loading="lazy" decoding="async" />
+                        : <span className="card-hatch" />}
                     </div>
                     <h3 className="card-title">{e.title}</h3>
                     <p className="card-meta">

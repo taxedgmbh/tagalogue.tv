@@ -20,6 +20,10 @@ const archivo = Archivo({
 // /login are client components and cannot export metadata, so they inherit
 // this — and "Tagalogue TV · Content" was showing in the tab of a page the
 // public is asked to fill in.
+// Tints the browser chrome to match the band at the top of the page. Lives on
+// `viewport`, not `metadata` — Next moved it and warns if it is on the wrong one.
+export const viewport = { themeColor: '#d9d6d6' }
+
 export const metadata: Metadata = {
   title: 'Tagalogue TV',
   description: 'A Filipino–Swiss channel from Biel/Bienne. Free on Apple TV.',
