@@ -57,7 +57,7 @@ struct PlayerView: UIViewControllerRepresentable {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         try? AVAudioSession.sharedInstance().setActive(true)
 
-        let asset = AVURLAsset(url: episode.playbackURL)
+        let asset = AVURLAsset(url: episode.streamURL)
         let item = AVPlayerItem(asset: asset)
 
         if !episode.chapters.isEmpty {
@@ -424,7 +424,7 @@ enum AmbientBackdrop {
 
     private static func sourceFrame(for episode: Episode) async -> CGImage? {
         // A stream that will not yield a frame still deserves a backdrop.
-        await MediaProbe.posterFrame(of: episode.playbackURL)
+        await MediaProbe.posterFrame(of: episode.streamURL)
             ?? episode.artworkResource.flatMap(BundledArtwork.image(named:))?.cgImage
     }
 

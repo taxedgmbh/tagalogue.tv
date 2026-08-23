@@ -26,12 +26,6 @@ final class CatalogStore {
         loadError = nil
     }
 
-    /// Publishing writes straight into the in-memory catalog so the new episode
-    /// appears immediately, without waiting for the next fetch to come round.
-    func merge(published episode: Episode) {
-        catalog = catalog.adding(episode)
-    }
-
     /// Everything playable right now, for lookups by id (deep links, routes).
     var allEpisodes: [Episode] { catalog.allEpisodes }
 

@@ -137,13 +137,6 @@ enum BundledArtwork {
     static func image(named name: String) -> UIImage? {
         if let hit = cache[name] { return hit }
 
-        // A poster written next to a phone upload names an absolute path.
-        if name.hasPrefix("/") {
-            guard let image = UIImage(contentsOfFile: name) else { return nil }
-            cache[name] = image
-            return image
-        }
-
         let ext = (name as NSString).pathExtension
         let base = (name as NSString).deletingPathExtension
         guard let url = Bundle.main.url(forResource: base, withExtension: ext.isEmpty ? "jpg" : ext),

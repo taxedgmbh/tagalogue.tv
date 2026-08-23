@@ -246,7 +246,6 @@ export default function Page() {
       isNew,
       chapters: [],
       artworkResource: artwork,
-      videoResource: null,
       publishedAt: new Date(releaseAt).toISOString(),
       expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
       trimStart: trimmed ? Math.round(trim[0]) : null,

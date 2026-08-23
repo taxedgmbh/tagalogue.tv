@@ -80,7 +80,6 @@ struct Episode: Codable, Identifiable, Hashable {
     let artworkResource: String?
     /// A video bundled with the app, by filename. When present it is played
     /// instead of `streamURL`. TEMPORARY, same reason.
-    let videoResource: String?
     /// When the episode went up. Drives "Latest", the hero and the Top Shelf.
     /// A date in the *future* means scheduled: `Catalog` filters it out until
     /// then, so a release needs nothing running on a timer.
@@ -156,16 +155,6 @@ struct Episode: Codable, Identifiable, Hashable {
 
     /// What the player should actually open: a bundled preview file when the
     /// catalog names one, otherwise the stream.
-    var playbackURL: URL {
-        guard let videoResource else { return streamURL }
-        // An episode received from a phone names an absolute path; the catalog
-        // names a file bundled with the app.
-        if videoResource.hasPrefix("/") { return URL(fileURLWithPath: videoResource) }
-        let ext = (videoResource as NSString).pathExtension
-        let base = (videoResource as NSString).deletingPathExtension
-        return Bundle.main.url(forResource: base, withExtension: ext.isEmpty ? "mp4" : ext)
-            ?? streamURL
-    }
 
     /// True where the catalog gives an episode no number — the channel's vlogs,
     /// which are dated rather than numbered. Every meta line honours this.
@@ -352,30 +341,6 @@ extension Catalog {
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         return try encoder.encode(self)
-    }
-
-    /// The same catalog with an episode added to a strand, creating the strand
-    /// if the channel has not used it before. Newest first within the strand.
-    func adding(_ episode: Episode) -> Catalog {
-        var updated = shows
-        if let index = updated.firstIndex(where: { $0.id == episode.showID }) {
-            var episodes = updated[index].episodes.filter { $0.id != episode.id }
-            episodes.insert(episode, at: 0)
-            updated[index] = Show(
-                id: updated[index].id,
-                title: updated[index].title,
-                subtitle: updated[index].subtitle,
-                episodes: episodes
-            )
-        } else {
-            updated.append(Show(
-                id: episode.showID,
-                title: episode.showTitle,
-                subtitle: "\(episode.showTitle) from the channel",
-                episodes: [episode]
-            ))
-        }
-        return Catalog(shows: updated)
     }
 }
 

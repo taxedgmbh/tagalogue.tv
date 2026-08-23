@@ -20,7 +20,6 @@ export type Episode = {
   isNew: boolean
   chapters: Chapter[]
   artworkResource?: string | null
-  videoResource?: string | null
   /**
    * When this becomes visible. A time in the future means scheduled: the
    * television hides it until then, so nothing has to run on a timer to make
