@@ -16,9 +16,11 @@ export default function Privacy() {
         <p className="eyebrow">Tagalogue TV</p>
         <h1 className="site-title">Privacy</h1>
         <p className="site-lede">
-          The short version: the Apple TV app has no accounts, no analytics and no
-          advertising, and what it remembers about your viewing never leaves your
-          television.
+          The short version: the Apple TV app has no accounts, no advertising and no
+          tracking, and what it remembers about <em>your</em> viewing never leaves your
+          television. Cloudflare counts how many minutes each episode is watched in
+          total, which is how the channel knows what is popular — there is no viewer
+          in that number.
         </p>
           </div>
         </header>
@@ -36,8 +38,9 @@ export default function Privacy() {
 
         <h2>The Apple TV app</h2>
         <p>
-          There is no sign-in and no account. We do not use analytics, advertising
-          identifiers, or any third-party tracking, and the app asks for no permissions.
+          There is no sign-in and no account. The app contains no analytics SDK, no
+          advertising identifier and no third-party tracking of any kind, it reports
+          nothing about you to anyone, and it asks for no permissions.
         </p>
         <p>Two things are stored, and both stay on the television:</p>
         <ul>
@@ -58,6 +61,14 @@ export default function Privacy() {
           Cloudflare&rsquo;s standard server logs. We use those logs only to keep the
           service running and to understand load. We do not build profiles from them,
           and we cannot connect them to a person.
+        </p>
+        <p>
+          Cloudflare also totals up <strong>how many minutes each episode has been
+          watched</strong>, across everyone. We read those totals to build the
+          &ldquo;Top 10 today&rdquo; list on the channel. They are counted on
+          Cloudflare&rsquo;s side from the video requests themselves — the app sends
+          nothing to produce them — and they are a number per episode, not per person.
+          There is no way for us to see what any individual television has watched.
         </p>
 
         <h2>If you send us a video</h2>
