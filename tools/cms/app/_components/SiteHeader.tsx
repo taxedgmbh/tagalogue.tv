@@ -20,7 +20,7 @@ export default function SiteHeader({ sections = false }: { sections?: boolean })
             srcSet="/brand/mark-40.png 1x, /brand/mark-40@2x.png 2x, /brand/mark-40@3x.png 3x"
             alt=""
             width={44}
-            height={41}
+            height={36}
           />
           <span>Tagalogue TV</span>
         </a>

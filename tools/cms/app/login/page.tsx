@@ -43,7 +43,7 @@ export default function Login() {
             srcSet="/brand/mark-40.png 1x, /brand/mark-40@2x.png 2x, /brand/mark-40@3x.png 3x"
             alt=""
             width={62}
-            height={57}
+            height={51}
           />
         </a>
         <p className="eyebrow">Tagalogue TV · Content</p>

@@ -108,7 +108,7 @@ export default async function Home() {
       <SiteHeader sections />
 
       <main className="site">
-        <header className="band band--ink site-hero">
+        <header className="band band--ash site-hero">
           <div className="band-inner">
             <p className="eyebrow">Filipino–Swiss · Biel/Bienne</p>
             <h1 className="site-title">Stories from the Filipino community in Switzerland</h1>

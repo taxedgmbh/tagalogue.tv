@@ -11,7 +11,7 @@ export default function Privacy() {
     <>
       <SiteHeader />
       <main className="site">
-        <header className="band band--ink site-hero site-hero--compact">
+        <header className="band band--ash site-hero site-hero--compact">
           <div className="band-inner">
         <p className="eyebrow">Tagalogue TV</p>
         <h1 className="site-title">Privacy</h1>

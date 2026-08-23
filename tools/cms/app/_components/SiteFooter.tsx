@@ -13,7 +13,7 @@
  */
 export default function SiteFooter({ episodes }: { episodes?: number }) {
   return (
-    <footer className="band band--ink site-foot">
+    <footer className="band band--ash site-foot">
       <div className="band-inner">
         <div>
           <strong>Tagalogue TV</strong>

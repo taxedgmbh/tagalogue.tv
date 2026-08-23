@@ -35,6 +35,10 @@
      fills, not for body copy. Small text and links on light use this instead,
      which measures 6.5:1. */
   --accent-deep: #ae1800;       /* DS --color-accent-700 */
+  /* The band the brand sits on. Was ink; the mark is now `assets/mark.svg`,
+     the light-ground variant, whose lettering is dark and which cannot sit on
+     black at all. Deep enough to stay a distinct band against paper. */
+  --ash: #d9d6d6;
   --n-300: #d7d3d3;
   --n-500: #9b9797;
   --n-700: #605d5d;
@@ -337,7 +341,7 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .band { width: 100%; }
 .band-inner { max-width: 1120px; margin: 0 auto; padding: 0 40px; }
 
-.band--ink { background: var(--ink); color: var(--paper); }
+.band--ash { background: var(--ash); color: var(--ink-text); }
 .band--paper { background: var(--paper); color: var(--ink-text); }
 .band--surface { background: var(--paper-surface); color: var(--ink-text); }
 .band--accent { background: var(--accent); color: #fff; }
@@ -345,9 +349,9 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 /* The masthead. Ink, so the lockup sits on the ground it was drawn for. */
 .topbar {
   position: sticky; top: 0; z-index: 20;
-  background: rgba(11, 10, 10, 0.94);
+  background: rgba(217, 214, 214, 0.94);
   backdrop-filter: blur(12px);
-  border-bottom: 2px solid var(--rule);
+  border-bottom: 2px solid var(--ink-rule);
 }
 .topbar-inner {
   max-width: 1120px; margin: 0 auto; padding: 14px 40px;
@@ -355,16 +359,16 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 }
 .topbar-brand {
   display: flex; align-items: center; gap: 13px;
-  color: var(--paper); text-decoration: none;
+  color: var(--ink-text); text-decoration: none;
   font-weight: 900; letter-spacing: -0.03em; font-size: 19px;
 }
 .topbar-brand img { display: block; }
 .topbar-links { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .topbar-links a {
-  padding: 9px 14px; color: var(--dim); text-decoration: none;
+  padding: 9px 14px; color: var(--ink-dim); text-decoration: none;
   font-size: 15px; font-weight: 600;
 }
-.topbar-links a:hover, .topbar-links a:focus-visible { color: var(--paper); }
+.topbar-links a:hover, .topbar-links a:focus-visible { color: var(--accent-deep); }
 
 .site { max-width: none; margin: 0; padding: 0; }
 
@@ -375,7 +379,7 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .site-hero { position: relative; overflow: hidden; }
 .site-hero::after {
   content: ''; position: absolute; inset: 0 0 0 auto; width: 46%;
-  background: repeating-linear-gradient(115deg, #232120 0 14px, #1a1817 14px 28px);
+  background: repeating-linear-gradient(115deg, #d2cfcf 0 16px, #d7d4d4 16px 32px);
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 62%);
   mask-image: linear-gradient(90deg, transparent 0%, #000 62%);
   pointer-events: none;
@@ -391,7 +395,7 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 }
 .site-lede {
   margin-top: 26px; max-width: 54ch;
-  font-size: 22px; line-height: 1.5; color: var(--dim);
+  font-size: 22px; line-height: 1.5; color: var(--ink-dim);
 }
 .site-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 44px; }
 
@@ -405,7 +409,7 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
   font-size: 12px; font-weight: 800; letter-spacing: 0.16em;
   text-transform: uppercase; color: var(--accent);
 }
-.band--paper .eyebrow, .band--surface .eyebrow { color: var(--accent-deep); }
+.band--paper .eyebrow, .band--surface .eyebrow, .band--ash .eyebrow { color: var(--accent-deep); }
 .band--accent .eyebrow { color: rgba(255, 255, 255, 0.82); }
 
 /* Not a button. Nothing to press yet, and beside a real button the old solid
@@ -419,7 +423,7 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .status-chip::before {
   content: ''; width: 9px; height: 9px; background: var(--accent); flex: none;
 }
-.band--paper .status-chip, .band--surface .status-chip {
+.band--paper .status-chip, .band--surface .status-chip, .band--ash .status-chip {
   border-color: var(--ink-rule); color: var(--ink-dimmer);
 }
 
@@ -431,9 +435,12 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .ghost:hover, .ghost:focus-visible { border-color: var(--accent); color: var(--accent); }
 .solid { background: var(--accent); color: #fff; font-weight: 800; }
 .solid:hover, .solid:focus-visible { background: var(--accent-deep); }
-.band--paper .ghost, .band--surface .ghost { border-color: var(--ink-rule-strong); color: var(--ink-text); }
+.band--paper .ghost, .band--surface .ghost, .band--ash .ghost {
+  border-color: var(--ink-rule-strong); color: var(--ink-text);
+}
 .band--paper .ghost:hover, .band--paper .ghost:focus-visible,
-.band--surface .ghost:hover, .band--surface .ghost:focus-visible {
+.band--surface .ghost:hover, .band--surface .ghost:focus-visible,
+.band--ash .ghost:hover, .band--ash .ghost:focus-visible {
   border-color: var(--accent); color: var(--accent-deep);
 }
 /* On the red field the outline button inverts: white on red. */
@@ -472,7 +479,7 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
   font-size: 12px; font-weight: 800; letter-spacing: 0.18em;
   text-transform: uppercase; color: var(--accent-deep); margin-bottom: 14px;
 }
-.band--ink .site-h2 { color: var(--accent); }
+.band--ash .site-h2 { color: var(--accent-deep); }
 .band--accent .site-h2 { color: rgba(255, 255, 255, 0.82); }
 .site-head {
   font-size: clamp(32px, 3.6vw, 46px); font-weight: 900;
@@ -482,7 +489,7 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .prose {
   color: var(--ink-dim); font-size: 19px; line-height: 1.65; max-width: var(--measure);
 }
-.band--ink .prose { color: var(--dim); }
+.band--ash .prose { color: var(--ink-dim); }
 
 /* ── The strand board ─────────────────────────────────────────────────────
    Always three cells, drawn from STRANDS and COMMUNITY_STRAND, with live
@@ -610,19 +617,19 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .site-foot > .band-inner {
   padding-top: 56px; padding-bottom: 56px;
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 26px;
-  font-size: 14px; color: var(--dim); line-height: 1.65;
+  font-size: 14px; color: var(--ink-dim); line-height: 1.65;
 }
-.site-foot strong { color: var(--paper); font-weight: 800; }
+.site-foot strong { color: var(--ink-text); font-weight: 800; }
 .site-foot-links { display: flex; flex-wrap: wrap; gap: 18px; }
-.site-foot-links a { color: var(--dim); text-decoration: none; font-weight: 600; }
-.site-foot-links a:hover, .site-foot-links a:focus-visible { color: var(--accent); }
-.site-foot-meta { font-variant-numeric: tabular-nums; color: var(--dimmer); }
+.site-foot-links a { color: var(--ink-dim); text-decoration: none; font-weight: 600; }
+.site-foot-links a:hover, .site-foot-links a:focus-visible { color: var(--accent-deep); }
+.site-foot-meta { font-variant-numeric: tabular-nums; color: var(--ink-dimmer); }
 
 /* Colophon — publisher attribution and the sister sites. Ordinary links, no
    rel="nofollow": these are meant to carry weight. */
 .site-foot-colophon { max-width: 42ch; line-height: 1.6; }
-.site-foot-colophon a { color: var(--dim); text-decoration: underline; text-underline-offset: 3px; }
-.site-foot-colophon a:hover, .site-foot-colophon a:focus-visible { color: var(--accent); }
+.site-foot-colophon a { color: var(--ink-dim); text-decoration: underline; text-underline-offset: 3px; }
+.site-foot-colophon a:hover, .site-foot-colophon a:focus-visible { color: var(--accent-deep); }
 
 /* Forms on the public site (report, submit). The editor has its own, denser,
    styling, and these sit on paper — so the shared `.label` and `.hint`, which
@@ -709,35 +716,43 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
   display: flex; align-items: center; justify-content: center;
   padding: 40px 22px;
   background:
-    radial-gradient(1100px 620px at 50% -8%, rgba(236, 48, 19, 0.13), transparent 68%),
-    repeating-linear-gradient(115deg, #131211 0 14px, #0e0d0c 14px 28px);
+    radial-gradient(1100px 620px at 50% -10%, rgba(236, 48, 19, 0.05), transparent 62%),
+    repeating-linear-gradient(115deg, #d4d1d1 0 16px, #d9d6d6 16px 32px);
 }
 .signin-card {
   width: 100%; max-width: 420px;
-  background: var(--ink);
-  border: 2px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink-text);
+  border: 2px solid var(--ink-rule);
   border-top: 4px solid var(--accent);
   padding: 40px 38px 32px;
 }
 .signin-brand { display: inline-block; line-height: 0; margin-bottom: 24px; }
 .signin-brand img { display: block; }
 .signin-title { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; margin-top: 10px; }
-.signin-lede { margin-top: 10px; color: var(--dim); font-size: 16px; line-height: 1.5; }
-.signin-rule { height: 2px; background: var(--rule); margin: 28px 0 4px; }
-.signin .label { margin-bottom: 8px; }
-.signin input[type='password'] { font-size: 17px; padding: 15px 16px; }
+.signin-lede { margin-top: 10px; color: var(--ink-dim); font-size: 16px; line-height: 1.5; }
+.signin-rule { height: 2px; background: var(--ink-rule); margin: 28px 0 4px; }
+.signin .label { margin-bottom: 8px; color: var(--ink-dimmer); }
+.signin input[type='password'] {
+  font-size: 17px; padding: 15px 16px;
+  background: #fff; color: var(--ink-text); border: 2px solid var(--ink-rule);
+}
+.signin input[type='password']:focus { border-color: var(--accent); }
 .signin-problem {
-  margin-top: 14px; color: var(--accent); font-weight: 700; font-size: 14px;
+  margin-top: 14px; color: var(--accent-deep); font-weight: 700; font-size: 14px;
   border-left: 4px solid var(--accent); padding-left: 12px;
 }
 .signin-go { width: 100%; margin-top: 22px; padding: 17px; font-size: 16px; }
+/* `button.action:disabled` is (0,2,1); this has to outrank it, or the
+   disabled state stays light-on-dark and vanishes on the light card. */
+.signin .signin-go:disabled { background: var(--n-300); color: var(--n-700); }
 .signin-foot {
   display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
-  margin-top: 26px; padding-top: 18px; border-top: 2px solid var(--rule);
-  font-size: 13px; color: var(--dimmer);
+  margin-top: 26px; padding-top: 18px; border-top: 2px solid var(--ink-rule);
+  font-size: 13px; color: var(--ink-dimmer);
 }
-.signin-foot a { color: var(--dim); text-decoration: none; font-weight: 700; }
-.signin-foot a:hover, .signin-foot a:focus-visible { color: var(--accent); }
+.signin-foot a { color: var(--ink-dim); text-decoration: none; font-weight: 700; }
+.signin-foot a:hover, .signin-foot a:focus-visible { color: var(--accent-deep); }
 .signin-foot span {
   font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
 }
@@ -746,8 +761,3 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
   .signin-title { font-size: 34px; }
 }
 
-/* The mark is raster art with its own pure-black ground baked in, and #000
-   against #0b0a0a reads as a faint square around the heart. Screen blending
-   drops the black and leaves the red and white, which is what the artwork is.
-   Only correct on a dark ground — hence not applied on the paper bands. */
-.topbar-brand img, .signin-brand img { mix-blend-mode: screen; }

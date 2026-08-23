@@ -33,7 +33,7 @@ export default function ReportPage() {
       <>
         <SiteHeader />
         <main className="site">
-          <header className="band band--ink site-hero site-hero--compact">
+          <header className="band band--ash site-hero site-hero--compact">
             <div className="band-inner">
           <p className="eyebrow">Report content</p>
           <h1 className="site-title">Thank you — we have it</h1>
@@ -55,7 +55,7 @@ export default function ReportPage() {
     <>
       <SiteHeader />
       <main className="site">
-        <header className="band band--ink site-hero site-hero--compact">
+        <header className="band band--ash site-hero site-hero--compact">
           <div className="band-inner">
         <p className="eyebrow">Report content</p>
         <h1 className="site-title">Tell us about something on the channel</h1>
