@@ -22,6 +22,7 @@ struct ContentView: View {
     @State private var lastFocused: [AppSection: String] = [:]
 
     @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
     @Query private var progress: [WatchProgress]
     @Query private var list: [ListEntry]
 
@@ -75,6 +76,16 @@ struct ContentView: View {
         .task {
             // The channel may have changed since this Apple TV last looked.
             await store.refresh()
+        }
+        // `.task` runs once, when the view first appears. tvOS suspends an app
+        // rather than terminating it, so coming back to the channel days later
+        // is usually a *resume* — the view never reappears and the catalog was
+        // never re-read. An episode published in the meantime stayed invisible
+        // until something forced a cold launch, which reads as "the app has to
+        // be updated to get new videos". It does not; it has to look again.
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            Task { await store.refresh() }
         }
     }
 

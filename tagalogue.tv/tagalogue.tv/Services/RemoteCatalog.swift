@@ -22,12 +22,21 @@ enum RemoteCatalog {
 
     /// Set `TagalogueCatalogURL` in Info.plist. Absent, the app runs on the
     /// bundled catalog alone, which is exactly how it behaved before.
-    static var url: URL? {
-        guard let string = Bundle.main.object(forInfoDictionaryKey: "TagalogueCatalogURL") as? String,
-              let trimmed = string.trimmingCharacters(in: .whitespaces).nilIfEmptyString,
-              let url = URL(string: trimmed)
-        else { return nil }
-        return url
+    ///
+    /// `TagalogueCatalogFallbackURL` is tried only when the first one fails.
+    /// One hostname is one point of failure, and not a theoretical one: while
+    /// the domain's old nameservers were still being cached, `cdn.tagalogue.tv`
+    /// did not exist as far as some resolvers were concerned, and a television
+    /// on one of those could not reach the channel at all. The bucket's own
+    /// address does not depend on that record.
+    static var urls: [URL] {
+        ["TagalogueCatalogURL", "TagalogueCatalogFallbackURL"].compactMap { key in
+            guard let string = Bundle.main.object(forInfoDictionaryKey: key) as? String,
+                  let trimmed = string.trimmingCharacters(in: .whitespaces).nilIfEmptyString,
+                  let url = URL(string: trimmed)
+            else { return nil }
+            return url
+        }
     }
 
     private static var cacheURL: URL {
@@ -48,8 +57,13 @@ enum RemoteCatalog {
     /// nothing reachable — never throws at the caller, because a failed refresh
     /// is a normal condition, not an error state for the viewer.
     static func fetch() async -> Catalog? {
-        guard let url else { return nil }
+        for url in urls {
+            if let catalog = await fetch(from: url) { return catalog }
+        }
+        return nil
+    }
 
+    private static func fetch(from url: URL) async -> Catalog? {
         var request = URLRequest(url: url)
         request.cachePolicy = .reloadIgnoringLocalCacheData
         request.timeoutInterval = 15

@@ -36,6 +36,11 @@
 	     ours so the bucket can be moved later without rebuilding the app. -->
 	<key>TagalogueCatalogURL</key>
 	<string>https://cdn.tagalogue.tv/catalog.json</string>
+	<!-- Tried only if the one above fails. The bucket's own address does not
+	     depend on the cdn record, so a DNS problem on our hostname cannot take
+	     the channel off the air. -->
+	<key>TagalogueCatalogFallbackURL</key>
+	<string>https://pub-59f39c9e91c34695acada7303f42a801.r2.dev/catalog.json</string>
 	<key>TagalogueSubmitURL</key>
 	<string>https://tagalogue.tv/submit</string>
 	<key>UIAppFonts</key>

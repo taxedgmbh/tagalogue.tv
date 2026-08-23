@@ -154,7 +154,19 @@ bundled one. A viewer should never see an empty screen because the network was s
 that returns zero shows is refused rather than blanking the channel.
 
 Set `TagalogueCatalogURL` in `Info.plist` to point at a catalog. Absent, the app runs on the bundle
-alone, exactly as it did before.
+alone, exactly as it did before. `TagalogueCatalogFallbackURL` is tried only when the first fails —
+one hostname is one point of failure, and not a theoretical one: while the domain's old nameservers
+were still cached, `cdn.tagalogue.tv` did not exist as far as some resolvers were concerned, and a
+television on one of those could not reach the channel at all. The fallback is the bucket's own
+address, which does not depend on that record.
+
+**Publishing an episode never needs an app build.** The catalog is fetched at runtime, so the only
+question is *when* the television looks. It looks on launch (`.task` on `ContentView`) and again
+whenever the app returns to the foreground (`scenePhase == .active`). The second one matters more
+than it sounds: tvOS suspends an app rather than terminating it, so reopening the channel is usually
+a resume, the view never reappears, and without that observer an episode published in the meantime
+stays invisible until something forces a cold launch — which reads to everyone as "the app has to be
+updated to get new videos".
 
 Episodes published this way carry `artworkResource` as an **`http(s)` URL** rather than a file path;
 `EpisodeArt` handles all three shapes (remote URL, absolute file path, bundled name).
