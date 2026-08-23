@@ -90,9 +90,22 @@ export default function Submit() {
                 onChange={(e) => setMessage(e.target.value)} />
       <div className="counter">{message.length} / 600</div>
 
+      {/*
+        No `capture` attribute, deliberately.
+
+        This carried `capture="user"`, which tells a phone to open the camera
+        immediately — the front-facing one — and skips the picker altogether.
+        Two things went wrong with that: nobody could send a video they had
+        already filmed, and anyone who did record on the spot got the selfie
+        camera whether or not they were the subject.
+
+        `accept="video/*"` on its own gives the normal iOS sheet — Photo
+        Library, Take Video, Choose File — so both work: pick something from
+        the camera roll, or record it right there with either camera.
+      */}
       <label className="pick">
-        {file ? `${file.name} · ${(file.size / 1048576).toFixed(1)} MB` : 'Choose a video'}
-        <input type="file" accept="video/*" capture="user"
+        {file ? `${file.name} · ${(file.size / 1048576).toFixed(1)} MB` : 'Choose or record a video'}
+        <input type="file" accept="video/*"
                onChange={(e) => { const f = e.target.files?.[0]; if (f) setFile(f) }} />
       </label>
       {tooLong && <p className="warn">That video is over 500 MB. Please send something shorter.</p>}
