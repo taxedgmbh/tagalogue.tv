@@ -698,3 +698,56 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .sub--public .warn { border-left-color: var(--accent); }
 .sub--public .action { background: var(--accent); color: #fff; }
 .sub--public .action:disabled { background: var(--n-300); color: var(--n-700); }
+
+/* ── Sign in ──────────────────────────────────────────────────────────────
+   The tool's front door. Ink, like /admin — this is not the channel — but it
+   is the first thing an editor sees, so it gets a composed card rather than a
+   form floating at the top of a black page. It used to borrow `.sub`, the
+   phone-first submission layout, which now lives on paper. */
+.signin {
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 22px;
+  background:
+    radial-gradient(1100px 620px at 50% -8%, rgba(236, 48, 19, 0.13), transparent 68%),
+    repeating-linear-gradient(115deg, #131211 0 14px, #0e0d0c 14px 28px);
+}
+.signin-card {
+  width: 100%; max-width: 420px;
+  background: var(--ink);
+  border: 2px solid var(--rule);
+  border-top: 4px solid var(--accent);
+  padding: 40px 38px 32px;
+}
+.signin-brand { display: inline-block; line-height: 0; margin-bottom: 24px; }
+.signin-brand img { display: block; }
+.signin-title { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; margin-top: 10px; }
+.signin-lede { margin-top: 10px; color: var(--dim); font-size: 16px; line-height: 1.5; }
+.signin-rule { height: 2px; background: var(--rule); margin: 28px 0 4px; }
+.signin .label { margin-bottom: 8px; }
+.signin input[type='password'] { font-size: 17px; padding: 15px 16px; }
+.signin-problem {
+  margin-top: 14px; color: var(--accent); font-weight: 700; font-size: 14px;
+  border-left: 4px solid var(--accent); padding-left: 12px;
+}
+.signin-go { width: 100%; margin-top: 22px; padding: 17px; font-size: 16px; }
+.signin-foot {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  margin-top: 26px; padding-top: 18px; border-top: 2px solid var(--rule);
+  font-size: 13px; color: var(--dimmer);
+}
+.signin-foot a { color: var(--dim); text-decoration: none; font-weight: 700; }
+.signin-foot a:hover, .signin-foot a:focus-visible { color: var(--accent); }
+.signin-foot span {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+}
+@media (max-width: 420px) {
+  .signin-card { padding: 32px 24px 26px; }
+  .signin-title { font-size: 34px; }
+}
+
+/* The mark is raster art with its own pure-black ground baked in, and #000
+   against #0b0a0a reads as a faint square around the heart. Screen blending
+   drops the black and leaves the red and white, which is what the artwork is.
+   Only correct on a dark ground — hence not applied on the paper bands. */
+.topbar-brand img, .signin-brand img { mix-blend-mode: screen; }
