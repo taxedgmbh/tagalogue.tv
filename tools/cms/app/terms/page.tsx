@@ -29,8 +29,14 @@ export default function Terms() {
         <h2>Who we are</h2>
         <p>
           Tagalogue TV is run by <strong>Taxed GmbH</strong>, Aegertenstrasse 10,
-          2503 Biel/Bienne, Switzerland — <a href="mailto:info@taxed.ch">info@taxed.ch</a>.
+          2503 Biel/Bienne, Switzerland &mdash; <a href="mailto:info@taxed.ch">info@taxed.ch</a>.
           Using the app or this website means accepting what is on this page.
+        </p>
+        <p>
+          The Apple TV app is published by{' '}
+          <a href="https://taxed.ch" target="_blank" rel="noreferrer">Taxed GmbH</a>, who also
+          make <a href="https://skopa.ai" target="_blank" rel="noreferrer">Skopa</a> &mdash;
+          finance software for Swiss SMEs.
         </p>
 
         <h2>Watching</h2>

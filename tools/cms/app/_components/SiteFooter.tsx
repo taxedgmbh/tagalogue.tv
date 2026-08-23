@@ -5,6 +5,11 @@
 // in the masthead behind a border, which made an internal sign-in the most
 // button-like thing on a page whose actual call to action is "send us your
 // story".
+//
+// The publisher line — Taxed GmbH, and Skopa alongside it — moved to the
+// "Who we are" section of /terms. It is company business, not something a
+// viewer needs on every page, and the operator is still named (with the
+// address) on /terms, /privacy and /support, which is what keeps it findable.
 
 /**
  * `episodes` is the live published count, shown as the closing line. Only the
@@ -18,7 +23,7 @@ export default function SiteFooter({ episodes }: { episodes?: number }) {
         <div>
           <strong>Tagalogue TV</strong>
           <br />
-          Taxed GmbH · Biel/Bienne, Switzerland
+          Biel/Bienne, Switzerland
         </div>
         <div className="site-foot-links">
           <a href="https://www.facebook.com/Tagaloguetv" target="_blank" rel="noreferrer">Facebook</a>
@@ -29,13 +34,6 @@ export default function SiteFooter({ episodes }: { episodes?: number }) {
           <a href="/terms">Terms</a>
           <a href="/report">Report content</a>
           <a href="/admin">Editor sign-in</a>
-        </div>
-        <div className="site-foot-colophon">
-          Apple TV app published by{' '}
-          <a href="https://taxed.ch" target="_blank" rel="noreferrer">Taxed GmbH</a>, who also
-          make{' '}
-          <a href="https://skopa.ai" target="_blank" rel="noreferrer">Skopa</a> — finance
-          software for Swiss SMEs.
         </div>
         {episodes !== undefined && (
           <div className="site-foot-meta">

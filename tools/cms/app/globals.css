@@ -625,11 +625,6 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .site-foot-links a:hover, .site-foot-links a:focus-visible { color: var(--accent-deep); }
 .site-foot-meta { font-variant-numeric: tabular-nums; color: var(--ink-dimmer); }
 
-/* Colophon — publisher attribution and the sister sites. Ordinary links, no
-   rel="nofollow": these are meant to carry weight. */
-.site-foot-colophon { max-width: 42ch; line-height: 1.6; }
-.site-foot-colophon a { color: var(--ink-dim); text-decoration: underline; text-underline-offset: 3px; }
-.site-foot-colophon a:hover, .site-foot-colophon a:focus-visible { color: var(--accent-deep); }
 
 /* Forms on the public site (report, submit). The editor has its own, denser,
    styling, and these sit on paper — so the shared `.label` and `.hint`, which
