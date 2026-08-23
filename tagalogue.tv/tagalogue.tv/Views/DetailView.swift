@@ -20,9 +20,10 @@ struct DetailView: View {
     @Query private var progress: [WatchProgress]
     @Query private var list: [ListEntry]
 
-    private enum Action: Hashable { case play, resume, list }
+    private enum Action: Hashable { case play, resume, list, report }
 
     @FocusState private var action: Action?
+    @State private var reporting = false
     @FocusState private var cardFocus: String?
 
     private var resume: Resume? {
@@ -46,6 +47,18 @@ struct DetailView: View {
         // what "Hey Siri, add this to my Up Next" reads. See UpNext.swift.
         .userActivity(UpNext.activityType) { activity in
             UpNext.describe(activity, for: episode)
+        }
+        .fullScreenCover(isPresented: $reporting) {
+            if let url = ChannelLinks.report {
+                ScanSheet(
+                    title: "Report this episode",
+                    message: "Scan the code and tell us what is wrong with \"\(episode.title)\". "
+                           + "A person reads every report. If something breaks the channel's "
+                           + "rules it comes down, and nothing needs to happen on your side.",
+                    url: url,
+                    onClose: { reporting = false }
+                )
+            }
         }
     }
 
@@ -150,6 +163,15 @@ struct DetailView: View {
                 .focused($action, equals: .list)
                 .accessibilityHint(inList ? "Removes this episode from My List"
                                           : "Saves this episode to the My List section")
+
+            // Guideline 1.2: anything a viewer sent in has to be reportable
+            // from the screen showing it, not only from the website.
+            if ChannelLinks.report != nil {
+                Button("Report") { reporting = true }
+                    .buttonStyle(SecondaryActionStyle())
+                    .focused($action, equals: .report)
+                    .accessibilityHint("Tell the channel something is wrong with this episode")
+            }
         }
     }
 

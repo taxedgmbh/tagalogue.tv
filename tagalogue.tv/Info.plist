@@ -43,6 +43,19 @@
 	<string>https://pub-59f39c9e91c34695acada7303f42a801.r2.dev/catalog.json</string>
 	<key>TagalogueSubmitURL</key>
 	<string>https://tagalogue.tv/submit</string>
+	<!-- The channel carries video sent in by viewers, so App Store Review
+	     guideline 1.2 applies: an app with user-generated content has to offer
+	     a way to report something objectionable from inside the app, and to
+	     reach the published terms and privacy policy. tvOS has no browser, so
+	     each of these is handed to a phone as a QR code. -->
+	<key>TagalogueReportURL</key>
+	<string>https://tagalogue.tv/report</string>
+	<key>TagalogueTermsURL</key>
+	<string>https://tagalogue.tv/terms</string>
+	<key>TagaloguePrivacyURL</key>
+	<string>https://tagalogue.tv/privacy</string>
+	<key>TagalogueSupportURL</key>
+	<string>https://tagalogue.tv/support</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Archivo-Regular.ttf</string>

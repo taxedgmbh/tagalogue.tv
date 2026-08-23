@@ -23,6 +23,45 @@ struct CommunityView: View {
     var onSelect: (Episode) -> Void
 
     @FocusState private var cardFocus: String?
+    /// Which of the channel's published pages is being handed to a phone.
+    @State private var showing: ChannelLink?
+
+    /// The pages App Store Review expects a viewer to be able to reach from
+    /// inside an app that carries user-generated content: how to report
+    /// something, what the rules are, and what is done with their data.
+    private enum ChannelLink: String, Identifiable, CaseIterable {
+        case report = "Report content"
+        case terms = "Terms of use"
+        case privacy = "Privacy"
+        case support = "Support"
+
+        var id: String { rawValue }
+
+        var url: URL? {
+            switch self {
+            case .report: ChannelLinks.report
+            case .terms: ChannelLinks.terms
+            case .privacy: ChannelLinks.privacy
+            case .support: ChannelLinks.support
+            }
+        }
+
+        var blurb: String {
+            switch self {
+            case .report:
+                "Anyone can report a video, with no account and no sign-in. A person reads "
+                + "every report, and anything breaking the rules comes down."
+            case .terms:
+                "What the channel will and will not show, and what you agree to by sending "
+                + "something in."
+            case .privacy:
+                "The app has no accounts, no analytics and no advertising. What it remembers "
+                + "about your viewing never leaves this television."
+            case .support:
+                "A real person reads what comes in. Write to info@taxed.ch."
+            }
+        }
+    }
 
     /// Set `TagalogueSubmitURL` in Info.plist. Without it the invitation is
     /// hidden rather than showing a code that leads nowhere.
@@ -48,34 +87,39 @@ struct CommunityView: View {
                     .padding(.top, 72)
             }
 
-            if !episodes.isEmpty {
-                if submitURL != nil {
-                    SectionRule()
-                        .padding(.horizontal, Theme.Metrics.safeH)
-                        .padding(.top, 48).padding(.bottom, 28)
+            // Everything below the invitation scrolls together. The links have
+            // to be inside this: `scrollClipDisabled` lets the grid draw past
+            // the bottom of the scroll view, and anything placed after it in
+            // the stack gets painted over.
+            ScrollView(.vertical) {
+                VStack(alignment: .leading, spacing: 0) {
+                    if !episodes.isEmpty {
+                        if submitURL != nil {
+                            SectionRule().padding(.top, 48).padding(.bottom, 28)
+                        }
+                        grid
+                    } else if submitURL != nil {
+                        SectionRule().padding(.top, 48).padding(.bottom, 26)
+                        Text("Nothing has been sent in yet. Be the first.")
+                            .archivo(.regular, 29)
+                            .foregroundStyle(Theme.paper(0.5))
+                    }
+
+                    channelLinks.padding(.top, 52)
                 }
-                // Only the grid scrolls. The invitation is the point of the
-                // screen and it stays put: moving focus onto a card used to
-                // scroll the heading up underneath the nav bar, so the screen
-                // arrived already past its own title.
-                ScrollView(.vertical) {
-                    grid
-                        .padding(.horizontal, Theme.Metrics.safeH)
-                        .padding(.bottom, Theme.Metrics.safeV)
-                }
-                .scrollClipDisabled()
-            } else if submitURL != nil {
-                SectionRule()
-                    .padding(.horizontal, Theme.Metrics.safeH)
-                    .padding(.top, 48).padding(.bottom, 26)
-                Text("Nothing has been sent in yet. Be the first.")
-                    .archivo(.regular, 29)
-                    .foregroundStyle(Theme.paper(0.5))
-                    .padding(.horizontal, Theme.Metrics.safeH)
-                Spacer(minLength: 0)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, Theme.Metrics.safeH)
+                .padding(.bottom, Theme.Metrics.safeV)
             }
+            .scrollClipDisabled()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .fullScreenCover(item: $showing) { link in
+            if let url = link.url {
+                ScanSheet(title: link.rawValue, message: link.blurb, url: url,
+                          onClose: { showing = nil })
+            }
+        }
         .task {
             try? await Task.sleep(for: .milliseconds(60))
             if let saved = focusedEpisode, episodes.contains(where: { $0.id == saved }) {
@@ -166,6 +210,24 @@ struct CommunityView: View {
             }
             .fixedSize()
         }
+    }
+
+    /// Report, terms, privacy, support — reachable from the television rather
+    /// than only from the website, which is what guideline 1.2 asks of an app
+    /// carrying video sent in by the people watching it.
+    private var channelLinks: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionRule().padding(.bottom, 22)
+
+            HStack(spacing: 16) {
+                ForEach(ChannelLink.allCases.filter { $0.url != nil }) { link in
+                    Button(link.rawValue) { showing = link }
+                        .buttonStyle(SecondaryActionStyle())
+                        .accessibilityHint("Shows a code to scan with your phone")
+                }
+            }
+        }
+        .focusSection()
     }
 
     private var grid: some View {
