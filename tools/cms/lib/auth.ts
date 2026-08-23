@@ -84,6 +84,10 @@ export function isPublicPath(pathname: string, method: string): boolean {
   if (pathname === '/api/report' && method === 'POST') return true
   if (pathname === '/login' || pathname === '/api/login') return true
   if (pathname.startsWith('/brand/')) return true
+  // The favicon and the share card. Next serves these from the app directory
+  // rather than /public, so they are real routes and deny-by-default caught
+  // them: every link preview would have fetched the sign-in page.
+  if (['/icon.png', '/apple-icon.png', '/opengraph-image.png'].includes(pathname)) return true
   if (pathname === '/api/submit' || pathname === '/api/submit/complete') return true
   // The television reads the catalog; it never writes.
   if (pathname === '/api/catalog' && method === 'GET') return true
