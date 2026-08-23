@@ -98,6 +98,19 @@ export const STRANDS = [
   { id: 'vlogs', title: 'Vlogs', subtitle: 'Life between two countries, as it happens' },
 ] as const
 
+/**
+ * The strand approved community videos land in.
+ *
+ * Lives here rather than in `submissions.ts` because the editor — a client
+ * component — needs it to name a strand, and importing it from there would
+ * drag the R2 store into the browser bundle.
+ */
+export const COMMUNITY_STRAND = {
+  id: 'community',
+  title: 'Community',
+  subtitle: 'Sent in by the people who watch',
+}
+
 export const emptyCatalog: Catalog = { shows: [] }
 
 /**

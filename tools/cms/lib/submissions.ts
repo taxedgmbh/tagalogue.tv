@@ -63,9 +63,11 @@ export async function updateSubmission(
   return list[index]
 }
 
-/** The strand approved community videos land in. */
-export const COMMUNITY_STRAND = {
-  id: 'community',
-  title: 'Community',
-  subtitle: 'Sent in by the people who watch',
-}
+/**
+ * The strand approved community videos land in.
+ *
+ * Defined in `catalog.ts` and re-exported here, so the editor can import it
+ * without pulling this module — and the R2 store it depends on — into the
+ * browser.
+ */
+export { COMMUNITY_STRAND } from './catalog'

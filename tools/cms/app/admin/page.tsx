@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   Caption, Catalog, Episode, LANGUAGES, MATURITIES, Maturity, STRANDS, VISIBILITIES,
+  COMMUNITY_STRAND,
   Visibility, allEpisodes, daysRemaining, durationLabel, emptyCatalog, isExpired,
   isScheduled, playingSeconds, statusOf, visibilityOf,
 } from '@/lib/catalog'
@@ -264,7 +265,10 @@ export default function Page() {
   }
 
   function describe(streamURL: string, id: string, artwork: string | null): Episode {
-    const strandInfo = STRANDS.find((s) => s.id === strand)
+    // COMMUNITY_STRAND is not in STRANDS, so an approved submission fell
+    // through to "Uploads" and every community episode announced itself as
+    // that on the television — in the hero, on its card and in search.
+    const strandInfo = [...STRANDS, COMMUNITY_STRAND].find((s) => s.id === strand)
     const trimmed = trim[0] > 0 || trim[1] < duration
     return {
       id,
