@@ -378,7 +378,13 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 .band--ash { background: var(--ash); color: var(--ink-text); }
 .band--paper { background: var(--paper); color: var(--ink-text); }
 .band--surface { background: var(--paper-surface); color: var(--ink-text); }
-.band--accent { background: var(--accent); color: #fff; }
+/* The red field runs at accent-700, not accent.
+   White on #ec3013 measures 4.25:1 — under the 4.5:1 that normal-size text
+   needs, so the kicker, the body copy and the outline button on this band all
+   failed contrast. On #ae1800 white measures 7.2:1 and every one of them
+   passes with room to spare. Still unmistakably the brand red, and it is the
+   ramp the design system already defines for exactly this. */
+.band--accent { background: var(--accent-deep); color: #fff; }
 
 /* The masthead. Ink, so the lockup sits on the ground it was drawn for. */
 .topbar {
@@ -444,7 +450,7 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
   text-transform: uppercase; color: var(--accent);
 }
 .band--paper .eyebrow, .band--surface .eyebrow, .band--ash .eyebrow { color: var(--accent-deep); }
-.band--accent .eyebrow { color: rgba(255, 255, 255, 0.82); }
+.band--accent .eyebrow { color: rgba(255, 255, 255, 0.92); }
 
 /* Not a button. Nothing to press yet, and beside a real button the old solid
    red pill read as one that was broken — so it is now plainly a status. */
@@ -467,8 +473,10 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 }
 .ghost { border: 2px solid var(--rule-strong); color: var(--paper); }
 .ghost:hover, .ghost:focus-visible { border-color: var(--accent); color: var(--accent); }
-.solid { background: var(--accent); color: #fff; font-weight: 800; }
-.solid:hover, .solid:focus-visible { background: var(--accent-deep); }
+/* Same measurement, same conclusion: 15px at weight 800 is "normal" text to
+   WCAG, not large, so white on #ec3013 was 4.25:1 against a 4.5:1 bar. */
+.solid { background: var(--accent-deep); color: #fff; font-weight: 800; }
+.solid:hover, .solid:focus-visible { background: #8c1300; }
 .band--paper .ghost, .band--surface .ghost, .band--ash .ghost {
   border-color: var(--ink-rule-strong); color: var(--ink-text);
 }
@@ -514,7 +522,7 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
   text-transform: uppercase; color: var(--accent-deep); margin-bottom: 14px;
 }
 .band--ash .site-h2 { color: var(--accent-deep); }
-.band--accent .site-h2 { color: rgba(255, 255, 255, 0.82); }
+.band--accent .site-h2 { color: rgba(255, 255, 255, 0.92); }
 .site-head {
   font-size: clamp(32px, 3.6vw, 46px); font-weight: 900;
   line-height: 1.06; letter-spacing: -0.03em; margin: 0 0 40px;
@@ -607,7 +615,7 @@ td .meta.leaving { color: var(--accent); font-weight: 700; }
 }
 .panel-body {
   margin-top: 22px; font-size: 21px; line-height: 1.55; max-width: 58ch;
-  color: rgba(255, 255, 255, 0.92);
+  color: #fff;
 }
 .panel-body strong { color: #fff; font-weight: 800; }
 .site-panel .ghost { margin-top: 34px; }

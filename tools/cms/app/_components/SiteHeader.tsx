@@ -14,7 +14,11 @@ export default function SiteHeader({ sections = false }: { sections?: boolean })
   return (
     <nav className="topbar">
       <div className="topbar-inner">
-        <a className="topbar-brand" href="/">
+        {/* The wordmark beside the mark is hidden below 720px, and the mark
+            itself is decorative — so on a phone this link had no accessible
+            name at all. Named here rather than by giving the image alt text,
+            which would then be read twice on a wide screen. */}
+        <a className="topbar-brand" href="/" aria-label="Tagalogue TV — home">
           <img
             src="/brand/mark-40.png"
             srcSet="/brand/mark-40.png 1x, /brand/mark-40@2x.png 2x, /brand/mark-40@3x.png 3x"

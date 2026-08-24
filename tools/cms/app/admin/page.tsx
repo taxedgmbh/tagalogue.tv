@@ -922,9 +922,15 @@ async function grabFrames(src: string, remote: boolean): Promise<{ duration: num
     const at = duration > 0 ? (duration * (step + 0.5)) / 4 : 0
     try {
       await seek(video, at)
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
-      context.drawImage(video, 0, 0)
+      // Capped rather than native. A phone shoots 1080x1920, and a thumbnail
+      // that size is a 150 KB image for a card a few hundred pixels wide — on
+      // the website that was the single largest thing on the page. 1280 on the
+      // long edge is still more than any surface asks for.
+      const cap = 1280
+      const scale = Math.min(1, cap / Math.max(video.videoWidth, video.videoHeight))
+      canvas.width = Math.round(video.videoWidth * scale)
+      canvas.height = Math.round(video.videoHeight * scale)
+      context.drawImage(video, 0, 0, canvas.width, canvas.height)
       const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', 0.85))
       if (blob) frames.push({ seconds: at, dataURL: canvas.toDataURL('image/jpeg', 0.7), blob })
     } catch {

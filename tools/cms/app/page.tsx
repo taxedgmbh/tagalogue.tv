@@ -97,6 +97,26 @@ function poster(e: Episode): string | null {
   return a && /^https?:\/\//.test(a) ? a : null
 }
 
+/**
+ * The poster at a size close to the box it goes in.
+ *
+ * Cloudflare Stream renders its thumbnails on demand, so the width is just a
+ * query parameter — and the catalog asks for 1280, which is three or four
+ * times the card on a phone. Stream is the only source that can do this;
+ * thumbnails uploaded to R2 are served at whatever size they were made, which
+ * is why the content tool now caps them when it generates one.
+ */
+function posterAt(url: string, width: number): string {
+  if (!url.includes('cloudflarestream.com')) return url
+  try {
+    const u = new URL(url)
+    u.searchParams.set('width', String(width))
+    return u.toString()
+  } catch {
+    return url
+  }
+}
+
 function runtime(seconds: number): string {
   if (!seconds) return ''
   const m = Math.round(seconds / 60)
@@ -195,10 +215,14 @@ export default async function Home() {
                               real 16:9 still fills the card exactly and the
                               wash never shows, so this costs landscape
                               nothing. */}
-                          <img className="card-wash" src={poster(e)!} alt="" aria-hidden="true"
-                               loading="lazy" decoding="async" />
-                          <img className="card-frame" src={poster(e)!} alt={e.title}
-                               loading="lazy" decoding="async" />
+                          {/* Blurred past recognition, so it has no business
+                              being loaded at full size. Same URL as the frame
+                              wherever it cannot be resized, in which case the
+                              browser fetches it once and uses it twice. */}
+                          <img className="card-wash" src={posterAt(poster(e)!, 320)} alt=""
+                               aria-hidden="true" loading="lazy" decoding="async" />
+                          <img className="card-frame" src={posterAt(poster(e)!, 640)} alt={e.title}
+                               loading="lazy" decoding="async" width={640} height={360} />
                         </>
                       ) : <span className="card-hatch" />}
                     </div>
