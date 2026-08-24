@@ -35,7 +35,20 @@ export default {
   // Next 16 writes its own AGENTS.md/CLAUDE.md; the repo already has one at the
   // root and a second, generated copy here only causes confusion.
   agentRules: false,
-  // Videos go through route handlers, which stream them; the default 1 MB
-  // body limit only applies to Server Actions, which this tool does not use.
-  experimental: { serverActions: { bodySizeLimit: '2gb' } },
+  experimental: {
+    // Videos go through route handlers, which stream them; the default 1 MB
+    // body limit only applies to Server Actions, which this tool does not use.
+    serverActions: { bodySizeLimit: '2gb' },
+    // Put the stylesheet in the document rather than linking to it.
+    //
+    // The whole of it is 8.6 KB — one file, shared by the site and the editor —
+    // and as a <link> it is render-blocking: nothing paints until a second
+    // round trip finishes. Lighthouse measured 203 ms of the landing page's
+    // first paint waiting on exactly that. Inlined, the request stops existing.
+    //
+    // Worth doing only while the stylesheet stays small. Past a few tens of KB
+    // the trade reverses: the bytes are repaid on every page instead of cached
+    // once.
+    inlineCss: true,
+  },
 }

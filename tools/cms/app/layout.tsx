@@ -26,7 +26,7 @@ export const viewport = { themeColor: '#d9d6d6' }
 
 export const metadata: Metadata = {
   title: 'Tagalogue TV',
-  description: 'A Filipino–Swiss channel from Biel/Bienne. Free on Apple TV.',
+  description: 'A Filipino–Swiss channel from Bern. Free on Apple TV.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

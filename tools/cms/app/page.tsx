@@ -132,8 +132,24 @@ export default async function Home() {
     .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
     .slice(0, 6)
 
+  // Every card image comes from somewhere else — R2 for an uploaded still,
+  // Stream for a generated one — so the first of each costs a DNS lookup, a TCP
+  // handshake and a TLS negotiation before a byte of image moves. Warming them
+  // while the document is still parsing takes that off the front of the images.
+  // Computed from what is actually on the page rather than hard-coded, so a
+  // bucket or account that changes does not leave a preconnect pointing at a
+  // host nothing uses.
+  const origins = [...new Set(
+    latest.map(poster).filter((u): u is string => u !== null)
+      .map((u) => { try { return new URL(u).origin } catch { return null } })
+      .filter((o): o is string => o !== null)
+  )]
+
   return (
     <>
+      {origins.map((o) => (
+        <link key={o} rel="preconnect" href={o} crossOrigin="anonymous" />
+      ))}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(GRAPH) }}
