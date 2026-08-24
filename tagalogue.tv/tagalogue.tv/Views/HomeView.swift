@@ -11,6 +11,11 @@ struct HomeView: View {
     let catalog: Catalog
     let progress: [WatchProgress]
     let list: [ListEntry]
+    /// True when the channel could not be reached and nothing has ever been
+    /// fetched — as opposed to a channel with nothing published, which is an
+    /// ordinary state and must not read as a failure.
+    var isUnreachable: Bool = false
+    var onRetry: () -> Void = {}
     /// Last card focused here, so returning to Home lands where you left.
     @Binding var focusedEpisode: String?
     var onPlay: (Episode) -> Void
@@ -25,7 +30,7 @@ struct HomeView: View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 0) {
                 if isEmpty {
-                    emptyState
+                    if isUnreachable { unreachableState } else { emptyState }
                 } else {
                     if let featured = catalog.featured {
                         hero(featured)
@@ -64,6 +69,35 @@ struct HomeView: View {
     /// states, not errors, so this says what is true and stops there.
     private var isEmpty: Bool {
         allRailEpisodes.isEmpty && catalog.featured == nil
+    }
+
+    /// Nothing was fetched and the network is the reason. Saying "nothing on
+    /// air yet" here would be stating something false about the channel as
+    /// though it were fact.
+    private var unreachableState: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("TAGALOGUE TV")
+                .archivo(.bold, 23, tracking: 0.22)
+                .foregroundStyle(Theme.accent)
+
+            Text("Can't reach the channel")
+                .archivo(.black, 76, tracking: -0.01)
+                .foregroundStyle(Theme.paper)
+
+            Text("This Apple TV cannot get online, or the channel is not answering. "
+                 + "Episodes are still there — nothing has been lost.")
+                .archivo(.regular, 31, tracking: 0)
+                .foregroundStyle(Theme.paper(0.62))
+                .frame(maxWidth: 900, alignment: .leading)
+                .padding(.bottom, 12)
+
+            Button("Try again", action: onRetry)
+                .buttonStyle(PrimaryActionStyle())
+                .focused($heroAction, equals: .play)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading, Theme.Metrics.safeH)
+        .padding(.top, 180)
     }
 
     private var emptyState: some View {

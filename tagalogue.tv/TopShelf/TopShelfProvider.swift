@@ -6,9 +6,15 @@
 //  viewer sees before they ever open the app, and the one thing the project
 //  was leaving entirely to a static image.
 //
-//  The extension ships code only. catalog.json lives in the containing app,
-//  and the models come from Shared/Catalog.swift, compiled into both targets:
-//  the Top Shelf must never describe an episode differently from the app.
+//  The extension ships code only. The models — and now the fetcher — come from
+//  Shared/, compiled into both targets: the Top Shelf must never describe an
+//  episode differently from the app.
+//
+//  It used to read the *bundled* catalog.json, which has held zero episodes
+//  since the catalog went remote. The shelf was therefore empty on every Apple
+//  TV, permanently, and had been since the day it stopped being a static file.
+//  It fetches the real catalog now, on the same addresses the app uses, with
+//  its own cache to fall back on and the bundled seed beneath that.
 //
 
 import Foundation
@@ -18,41 +24,58 @@ import UIKit
 final class TopShelfProvider: TVTopShelfContentProvider {
 
     override func loadTopShelfContent(completionHandler: @escaping (TVTopShelfContent?) -> Void) {
-        guard let catalog = try? Catalog.decode(from: .containingApp) else {
-            completionHandler(nil)
-            return
-        }
+        Task {
+            let catalog = await Self.bestAvailableCatalog()
+            let episodes = catalog.latest(8)
 
-        let artwork = TopShelfArtwork.placeholderURL()
-
-        let items = catalog.latest(8).map { episode -> TVTopShelfSectionedItem in
-            let item = TVTopShelfSectionedItem(identifier: episode.id)
-            item.title = episode.title
-            item.imageShape = .hdtv
-            if let artwork {
-                item.setImageURL(artwork, for: .screenScale1x)
-                item.setImageURL(artwork, for: .screenScale2x)
+            guard !episodes.isEmpty else {
+                // Nothing to show is a real answer: it leaves the static Top
+                // Shelf image in place rather than an empty shelf.
+                completionHandler(nil)
+                return
             }
-            item.displayAction = TVTopShelfAction(url: DeepLink.detail(episode.id))
-            item.playAction = TVTopShelfAction(url: DeepLink.play(episode.id))
-            return item
-        }
 
-        let collection = TVTopShelfItemCollection(items: items)
-        collection.title = "Latest"
-        completionHandler(TVTopShelfSectionedContent(sections: [collection]))
+            let fallback = TopShelfArtwork.placeholderURL()
+            let items = episodes.map { episode -> TVTopShelfSectionedItem in
+                let item = TVTopShelfSectionedItem(identifier: episode.id)
+                item.title = episode.title
+                item.imageShape = .hdtv
+
+                // The episode's own still, which the shelf never used to ask
+                // for. Only an http(s) address is any use here — a bundled
+                // name means nothing inside an extension, and a file path
+                // belongs to the app's container, not this one.
+                if let art = episode.artworkResource,
+                   art.hasPrefix("http"),
+                   let url = URL(string: art) {
+                    item.setImageURL(url, for: .screenScale1x)
+                    item.setImageURL(url, for: .screenScale2x)
+                } else if let fallback {
+                    item.setImageURL(fallback, for: .screenScale1x)
+                    item.setImageURL(fallback, for: .screenScale2x)
+                }
+
+                item.displayAction = TVTopShelfAction(url: DeepLink.detail(episode.id))
+                item.playAction = TVTopShelfAction(url: DeepLink.play(episode.id))
+                return item
+            }
+
+            let collection = TVTopShelfItemCollection(items: items)
+            collection.title = "Latest"
+            completionHandler(TVTopShelfSectionedContent(sections: [collection]))
+        }
     }
-}
 
-extension Bundle {
-    /// The .appex sits at `<App>.app/PlugIns/<Name>.appex`, so the containing
-    /// app is the nearest enclosing `.app`. Only the app ships catalog.json.
-    static var containingApp: Bundle {
-        var url = Bundle.main.bundleURL
-        while url.pathExtension != "app" && url.pathComponents.count > 1 {
-            url.deleteLastPathComponent()
-        }
-        return Bundle(url: url) ?? .main
+    /// Network first, then this extension's own cache, then the bundled seed.
+    ///
+    /// One attempt on a short timeout: the system gives a content provider a
+    /// few seconds, and a shelf that arrives late is a shelf nobody sees. The
+    /// fetch writes the cache on its way through, so a slow launch still
+    /// leaves the next one fast.
+    private static func bestAvailableCatalog() async -> Catalog {
+        if let fresh = await RemoteCatalog.fetch(attempts: 1, timeout: 6) { return fresh }
+        if let cached = RemoteCatalog.cached(), !cached.shows.isEmpty { return cached }
+        return (try? Catalog.decode(from: .containingApp)) ?? Catalog(shows: [])
     }
 }
 

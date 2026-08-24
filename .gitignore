@@ -30,3 +30,6 @@ tools/cms/.data/
 
 # ── macOS ─────────────────────────────────────────────────────────────────
 .DS_Store
+
+# SwiftPM build products for the test package.
+.build/

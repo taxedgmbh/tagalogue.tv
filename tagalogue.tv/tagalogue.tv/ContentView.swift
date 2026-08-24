@@ -138,6 +138,8 @@ struct ContentView: View {
                     catalog: store.catalog,
                     progress: progress,
                     list: list,
+                    isUnreachable: store.isUnreachable,
+                    onRetry: { Task { await store.refresh() } },
                     focusedEpisode: focusBinding(for: .home),
                     onPlay: { play($0) },
                     onDetail: { path.append(.detail($0)) }

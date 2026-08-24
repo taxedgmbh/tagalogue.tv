@@ -7,22 +7,49 @@
 
 import SwiftUI
 import SwiftData
+import Foundation
 import UIKit
 
 @main
 struct tagalogue_tvApp: App {
+    /// Resume positions and My List.
+    ///
+    /// Both are conveniences: losing them costs a viewer their place in an
+    /// episode, which is a bad evening. Refusing to launch costs them the
+    /// channel entirely, with no remedy but deleting the app — so an
+    /// unreadable store is stepped down through rather than fatal.
+    ///
+    /// The steps are: the store as it is, then a fresh one in its place, then
+    /// memory only. The channel itself is unaffected by all of this; it comes
+    /// from the network.
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            WatchProgress.self,
-            ListEntry.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let schema = Schema([WatchProgress.self, ListEntry.self])
 
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+        if let container = try? ModelContainer(
+            for: schema,
+            configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)]
+        ) { return container }
+
+        // Unreadable on disk — a bad migration, a truncated write, a purge
+        // under storage pressure. Take the store and its write-ahead log out of
+        // the way and start again.
+        let storeURL = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false).url
+        for suffix in ["", "-shm", "-wal"] {
+            let sidecar = storeURL.deletingLastPathComponent()
+                .appendingPathComponent(storeURL.lastPathComponent + suffix)
+            try? FileManager.default.removeItem(at: sidecar)
         }
+
+        if let container = try? ModelContainer(
+            for: schema,
+            configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)]
+        ) { return container }
+
+        // Last resort: this launch keeps no history, but it launches.
+        return try! ModelContainer(
+            for: schema,
+            configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)]
+        )
     }()
 
     init() {

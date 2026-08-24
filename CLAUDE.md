@@ -23,7 +23,7 @@ xcodebuild -project tagalogue.tv.xcodeproj -scheme "tagalogue.tv" \
 
 The tvOS platform is a separate, multi-gigabyte download from Xcode itself — `xcodebuild -downloadPlatform tvOS`. Without it, even `-destination generic/platform=tvOS` fails with "tvOS is not installed", so a fresh machine cannot build this until that completes.
 
-There are no tests.
+Tests live in a **separate SwiftPM package** at the repo root (`Package.swift`, `Tests/`), not in the Xcode project: `swift test` covers the Foundation-pure logic in `Shared/` — the three visibility gates, scheduling, expiry, `Lossy` decoding, the chart and deep links. It is deliberately not an Xcode test target, because adding one means editing the `.pbxproj` that Xcode Cloud builds and signs from, and that is not a trade worth making for a test runner. `WatchProgress` and `Resume` are not covered; they sit behind SwiftData in the app target.
 
 ## Architecture
 
@@ -309,9 +309,15 @@ Focus borders belong on the artwork rectangle only, never wrapping the caption �
 
 ### Top Shelf
 
-`TopShelf/` is a `TVTopShelfContentProvider` app extension showing the latest episodes on the tvOS home screen. It ships **code only**: `catalog.json` lives in the containing app (`Bundle.containingApp` walks up to the enclosing `.app`), and the models come from `Shared/`, a synchronized group compiled into *both* targets so the shelf can never describe an episode differently from the app. Items deep-link back in via `tagaloguetv://`.
+`TopShelf/` is a `TVTopShelfContentProvider` app extension showing the latest episodes on the tvOS home screen. It ships **code only**; the models *and the fetcher* come from `Shared/`, a synchronized group compiled into *both* targets so the shelf can never describe an episode differently from the app. Items deep-link back in via `tagaloguetv://`.
 
-It cannot show Continue Watching: that lives in SwiftData inside the app container, and reading it from the extension would need an **App Group**, which means a portal-registered group id and an entitlement change on both targets.
+**The shelf fetches the catalog itself — it does not read the bundled copy.** It used to, and the bundled copy has held zero episodes since the catalog went remote, so the shelf was empty on every Apple TV, permanently, from the day it stopped being a static file. `RemoteCatalog` now lives in `Shared/` and runs in both targets: the extension fetches on the same addresses, with one attempt on a 6-second timeout because the system gives a content provider a few seconds and a late shelf is a shelf nobody sees. Its own cache sits behind that, and the bundled seed behind that.
+
+An extension has its own container, so its cache is not the app's. That is fine for the catalog — both fetch it — and it is why the addresses are read through `Bundle.containingApp`: only the app's Info.plist declares them, and duplicating them into a second plist would guarantee drift.
+
+Items carry the episode's real `artworkResource`, not a placeholder — only an `http(s)` one, since a bundled name means nothing inside an extension and a file path belongs to the app's container. The hatch remains for episodes with no artwork at all.
+
+It still cannot show Continue Watching: that lives in SwiftData inside the app container, and reading it from the extension would need an **App Group**, which means a portal-registered group id and an entitlement change on both targets — deliberately not done, because it would disturb a signing chain that currently builds and ships unattended.
 
 ## Assets
 
