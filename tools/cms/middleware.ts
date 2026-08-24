@@ -8,37 +8,9 @@ import { SESSION_COOKIE, isConfigured, isPublicPath, isValid } from '@/lib/auth'
  * next month is protected the moment it exists, rather than the moment someone
  * remembers to protect it.
  */
-/**
- * Public pages worth caching at the edge. Deliberately a list rather than a
- * pattern: /submit and /report post forms, and /admin and /login must never be
- * held anywhere.
- */
-const CACHEABLE = new Set(['/', '/privacy', '/terms', '/support'])
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  if (isPublicPath(pathname, request.method)) {
-    const response = NextResponse.next()
-
-    // Let Cloudflare hold the public pages at the edge for a minute.
-    //
-    // The landing page is `force-dynamic` because it reads the live catalog,
-    // which makes Next answer `no-store` — so every visitor, everywhere, waited
-    // on an R2 round trip from Switzerland. Lighthouse measured 2.2s of that
-    // under mobile throttling, and it was most of the Largest Contentful Paint.
-    //
-    // A minute is nothing against how often the channel changes, and
-    // `stale-while-revalidate` means the first visitor after it lapses gets the
-    // slightly-old copy instantly rather than waiting for a fresh one. The
-    // televisions are unaffected: they read the bucket directly, never this.
-    if (CACHEABLE.has(pathname) && request.method === 'GET') {
-      response.headers.set(
-        'Cache-Control',
-        'public, max-age=0, s-maxage=60, stale-while-revalidate=600'
-      )
-    }
-    return response
-  }
+  if (isPublicPath(pathname, request.method)) return NextResponse.next()
 
   // Misconfiguration locks the tool rather than opening it, and says so
   // plainly instead of failing with a stack trace.
