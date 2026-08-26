@@ -9,7 +9,7 @@
 // for why.
 
 import { readCatalog } from '@/lib/store'
-import { publicCatalog, STRANDS, type Episode } from '@/lib/catalog'
+import { publicCatalog, durationLabel, STRANDS, type Episode } from '@/lib/catalog'
 import { COMMUNITY_STRAND } from '@/lib/submissions'
 import SiteHeader from './_components/SiteHeader'
 import SiteFooter from './_components/SiteFooter'
@@ -115,12 +115,6 @@ function posterAt(url: string, width: number): string {
   } catch {
     return url
   }
-}
-
-function runtime(seconds: number): string {
-  if (!seconds) return ''
-  const m = Math.round(seconds / 60)
-  return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${m % 60} min`
 }
 
 export default async function Home() {
@@ -246,7 +240,7 @@ export default async function Home() {
                     <p className="card-meta">
                       {e.showTitle}
                       {e.number > 0 ? ` · EP ${e.number}` : ''}
-                      {runtime(e.duration) ? ` · ${runtime(e.duration)}` : ''}
+                      {e.duration ? ` · ${durationLabel(e.duration)}` : ''}
                     </p>
                   </article>
                 ))}

@@ -424,8 +424,29 @@ enum AmbientBackdrop {
 
     private static func sourceFrame(for episode: Episode) async -> CGImage? {
         // A stream that will not yield a frame still deserves a backdrop.
-        await MediaProbe.posterFrame(of: episode.streamURL)
-            ?? episode.artworkResource.flatMap(BundledArtwork.image(named:))?.cgImage
+        //
+        // For the channel proper it never does: `AVAssetImageGenerator` cannot
+        // read an HLS playlist, and every published episode is one. So this
+        // succeeds only for a local file — an ingest preview — and the artwork
+        // below is what actually draws the wash on a real episode.
+        if let frame = await MediaProbe.posterFrame(of: episode.streamURL) { return frame }
+
+        guard let resource = episode.artworkResource else { return nil }
+        // Since the catalog went remote, `artworkResource` is usually an http
+        // URL. `BundledArtwork` only reads the app bundle, so every Stream
+        // episode fell through to nil and played inside two black voids — the
+        // one thing the ambient wash exists to prevent.
+        if let remote = await remoteFrame(resource) { return remote }
+        return BundledArtwork.image(named: resource)?.cgImage
+    }
+
+    /// The episode's own still, fetched. Shared `URLSession` on purpose: the
+    /// card that was focused a moment ago has usually already put it in the
+    /// cache, so this costs nothing on the way into the player.
+    private static func remoteFrame(_ resource: String) async -> CGImage? {
+        guard resource.hasPrefix("http"), let url = URL(string: resource) else { return nil }
+        guard let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
+        return UIImage(data: data)?.cgImage
     }
 
     private static func blurred(_ frame: CGImage) -> UIImage? {
